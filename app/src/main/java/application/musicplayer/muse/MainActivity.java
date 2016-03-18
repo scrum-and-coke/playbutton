@@ -59,6 +59,8 @@ private SongAdapter songAdapt;
     private boolean musicBound = false;
     //controller
     private MusicController controller;
+    private View cSelected;
+
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
 
@@ -251,6 +253,16 @@ private SongAdapter songAdapt;
     public void songClicked(View view) {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
+
+        if(cSelected != null)
+            cSelected.setBackgroundColor(0xffbf00);
+
+        view.setBackgroundColor(Color.TRANSPARENT);
+        //Toast.makeText(this," ", Toast.LENGTH_LONG).show();
+
+        view.setBackgroundColor(Color.GRAY);
+        cSelected = view;
+
         if (playbackPaused) {
             setController();
             playbackPaused = false;
