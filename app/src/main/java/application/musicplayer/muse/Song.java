@@ -1,11 +1,5 @@
 package application.musicplayer.muse;
 
-/*
- * This is demo code to accompany the Mobiletuts+ series:
- * Android SDK: Creating a Music Player
- * 
- * Sue Smith - February 2014
- */
 
 public class Song {
 	
