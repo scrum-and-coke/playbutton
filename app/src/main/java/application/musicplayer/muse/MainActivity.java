@@ -71,37 +71,7 @@ private SongAdapter songAdapt;
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
-
-        /*imageButton = (Button)this.findViewById(R.id.shuffleButtonSelector);
-        imageButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                musicSrv.setShuffle();
-                //Toast.makeText(MainActivity.this,
-                //      "ImageButton (selector) is clicked!",
-                //    Toast.LENGTH_SHORT).show();
-
-            }
-
-        });*/
     }
-
-   /* public void addListenerOnButton() {
-        Tab2.imageButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                musicSrv.setShuffle();
-                //Toast.makeText(MainActivity.this,
-                //      "ImageButton (selector) is clicked!",
-                //    Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-
-   }*/
     //Broadcast receiver to determine when music player has been prepared
     private BroadcastReceiver onPrepareReceiver = new BroadcastReceiver() {
         @Override
@@ -258,7 +228,6 @@ private SongAdapter songAdapt;
             cSelected.setBackgroundColor(0xffbf00);
 
         view.setBackgroundColor(Color.TRANSPARENT);
-        //Toast.makeText(this," ", Toast.LENGTH_LONG).show();
 
         view.setBackgroundColor(Color.GRAY);
         cSelected = view;
