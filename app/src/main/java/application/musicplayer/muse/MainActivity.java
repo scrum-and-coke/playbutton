@@ -59,6 +59,8 @@ private SongAdapter songAdapt;
     private boolean musicBound = false;
     //controller
     private MusicController controller;
+    private View cSelected;
+
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
 
@@ -69,37 +71,7 @@ private SongAdapter songAdapt;
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
-
-        /*imageButton = (Button)this.findViewById(R.id.shuffleButtonSelector);
-        imageButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                musicSrv.setShuffle();
-                //Toast.makeText(MainActivity.this,
-                //      "ImageButton (selector) is clicked!",
-                //    Toast.LENGTH_SHORT).show();
-
-            }
-
-        });*/
     }
-
-   /* public void addListenerOnButton() {
-        Tab2.imageButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                musicSrv.setShuffle();
-                //Toast.makeText(MainActivity.this,
-                //      "ImageButton (selector) is clicked!",
-                //    Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-
-   }*/
     //Broadcast receiver to determine when music player has been prepared
     private BroadcastReceiver onPrepareReceiver = new BroadcastReceiver() {
         @Override
@@ -251,6 +223,15 @@ private SongAdapter songAdapt;
     public void songClicked(View view) {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
+
+        if(cSelected != null)
+            cSelected.setBackgroundColor(0xffbf00);
+
+        view.setBackgroundColor(Color.TRANSPARENT);
+
+        view.setBackgroundColor(Color.GRAY);
+        cSelected = view;
+
         if (playbackPaused) {
             setController();
             playbackPaused = false;
