@@ -95,6 +95,8 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     private boolean musicBound = false;
     //controller
     public static MusicController controller;
+    private View cSelected;
+
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
     public static boolean loading_play = false;
@@ -137,8 +139,6 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
-
 
     //Broadcast receiver to determine when music player has been prepared
     private BroadcastReceiver onPrepareReceiver = new BroadcastReceiver() {
@@ -325,13 +325,14 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
     public void songClicked(View view) {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
-    // if(cSelected != null)
-    //        cSelected.setBackgroundColor(0xffbf00);
 
-     //   view.setBackgroundColor(Color.TRANSPARENT);
-        //Toast.makeText(this," ", Toast.LENGTH_LONG).show();
+        if(cSelected != null)
+            cSelected.setBackgroundColor(0xffbf00);
 
-    //    view.setBackgroundColor(Color.GRAY);
+        view.setBackgroundColor(Color.TRANSPARENT);
+
+        view.setBackgroundColor(Color.GRAY);
+        cSelected = view;
 
         if (playbackPaused) {
             setController();
