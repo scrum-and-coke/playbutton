@@ -8,6 +8,14 @@
         android:icon="@drawable/shuffle_button"
         app:showAsAction="always" android:title="Shuffle"/>
 
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/Create_Play" android:title="Create Playlist"
+        android:orderInCategory="100" app:showAsAction="never"
+        />
+    <item android:id="@+id/Save_Play" android:title="Save Playlist"
+        android:orderInCategory="100" app:showAsAction="never"
+        />
+    <item android:id="@+id/Load_Play" android:title="Load Playlist"
+        android:orderInCategory="100" app:showAsAction="never"
+        />
 </menu>
