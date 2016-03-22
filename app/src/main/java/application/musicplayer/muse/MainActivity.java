@@ -115,7 +115,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
-        //LoadPlaylist();
+
         File f = new File("/data/data/application.musicplayer.muse/files");
         playListFileDir = findPlaylist(f);
         for (File file : playListFileDir) {
@@ -131,41 +131,15 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         playList1 = tempList;
 
 
-        /*imageButton = (Button)this.findViewById(R.id.shuffleButtonSelector);
-        imageButton.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View arg0) {
-                musicSrv.setShuffle();
-                //Toast.makeText(MainActivity.this,
-                //      "ImageButton (selector) is clicked!",
-                //    Toast.LENGTH_SHORT).show();
-
-            }
-
-
-
-        });*/
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-    /* public void addListenerOnButton() {
-         Tab2.imageButton.setOnClickListener(new OnClickListener() {
-
-             @Override
-             public void onClick(View arg0) {
-                 musicSrv.setShuffle();
-                 //Toast.makeText(MainActivity.this,
-                 //      "ImageButton (selector) is clicked!",
-                 //    Toast.LENGTH_SHORT).show();
-
-             }
-         });
 
 
-    }*/
+
     //Broadcast receiver to determine when music player has been prepared
     private BroadcastReceiver onPrepareReceiver = new BroadcastReceiver() {
         @Override
@@ -346,18 +320,18 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         );
         AppIndex.AppIndexApi.start(client, viewAction);
     }
-    private View cSelected;
+   // private View cSelected;
     //user song select
     public void songClicked(View view) {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
-     if(cSelected != null)
-            cSelected.setBackgroundColor(0xffbf00);
+    // if(cSelected != null)
+    //        cSelected.setBackgroundColor(0xffbf00);
 
-        view.setBackgroundColor(Color.TRANSPARENT);
+     //   view.setBackgroundColor(Color.TRANSPARENT);
         //Toast.makeText(this," ", Toast.LENGTH_LONG).show();
 
-        view.setBackgroundColor(Color.GRAY);
+    //    view.setBackgroundColor(Color.GRAY);
 
         if (playbackPaused) {
             setController();
@@ -494,10 +468,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
 
     }
 
-    /* public static void noShowController()
-     {
-         controller.show(0);
-     }*/
+
     @Override
     public void onStop() {
         controller.hide();
@@ -532,7 +503,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
 
     public void CreatePlaylist(String name, ArrayList<String> listName){
 
-      //  ArrayList<File> mySongs = findSongs(Environment.getExternalStorageDirectory());
+
 
         try {
             String STORETEXT=name + ".txt";
@@ -541,24 +512,17 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
             metaRetriver = new MediaMetadataRetriever();
 
 
-           // ArrayList<SongInfo> holdSong = new ArrayList<SongInfo>();
+
             for (String x : listName) {
-              //  metaRetriver.setDataSource(x.getPath().toString());
+
                 try {
-                 //   SongInfo song = new SongInfo();
-                 //   song.Album = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-                //    song.Artist = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-                 //   song.Genre = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
-                 //   song.Year = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR));
-                //    holdSong.add(song);
+
 
                     out.write(x);
                     out.write('\n');
                 } catch (Exception e) {
 
-                    //album.setText("Unknown Album");
-                    ///artist.setText("Unknown Artist");
-                    //genre.setText("Unknown Genre");
+
                 }
 
             }

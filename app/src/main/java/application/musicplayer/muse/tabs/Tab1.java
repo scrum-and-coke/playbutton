@@ -53,12 +53,7 @@ public class Tab1 extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.tab_1,container,false);
 
-   //     LoadPlaylist(v);
-        //MainActivity main = new MainActivity();
-      //  main.LoadPlaylist(v);
-     //   if(MainActivity.controller != null) {
-      //      MainActivity.controller.hide();
-       // }
+
 
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(v.getContext(), android.R.layout.simple_list_item_1, MainActivity.playList1);
@@ -67,8 +62,7 @@ public class Tab1 extends Fragment{
         MainActivity.listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View clickView,
                                     int position, long id) {
-                //    TextView textView = (TextView) MainActivity.listView.findViewById(R.id.list_item);
-                //     String text = textView.getText().toString();
+
                 String text = (String) (MainActivity.listView.getItemAtPosition(position));
                 if (MainActivity.cPlaylistMode == true) {
 
@@ -79,9 +73,7 @@ public class Tab1 extends Fragment{
 
                     LoadPlaylist(v, f, text);
                 } else {
-                    //transfer the music paths over to the tab3 music player
-                //    MainActivity.songList.add(new Song(thisId, thisTitle, thisArtist));
-                   // File f = new File("/data/data/application.musicplayer.muse/files/" + text + ".txt");
+
                     try{
                     InputStream in = v.getContext().openFileInput(text + ".txt");
 
@@ -93,11 +85,10 @@ public class Tab1 extends Fragment{
                         StringBuilder buf = new StringBuilder();
                         MediaMetadataRetriever metaRetriver;
                         metaRetriver = new MediaMetadataRetriever();
-                        int i = 0;
                         while ((str = reader.readLine()) != null) {
 
-                            i++;
-                           // File f = new File(str);
+
+
                             File test = null;
                             for (File f : MainActivity.song){
                                 String x = f.getName();
@@ -107,21 +98,10 @@ public class Tab1 extends Fragment{
                                 }
                             }
 
-                          //  metaRetriver.setDataSource(test.getAbsolutePath());
-                            //SongInfo song = new SongInfo();
-                           // String title = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-                         //   String artist = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-                            // song.Genre = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
-                            // song.Year = (metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR));
-                            //int Songid = i;
                             MainActivity.songListTempHold.add(test);
-                          //  MainActivity.songListTemp.add(new Song(Songid,"test","test"));
+
                         }
 
-                        // ArrayAdapter<String> itemsAdapter =
-                        //          new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mySongsName);
-                        //  ListView listView = (ListView) findViewById(R.id.listView);
-                        //   listView.setAdapter(itemsAdapter);
                     }
                         in.close();
 
@@ -142,15 +122,14 @@ public class Tab1 extends Fragment{
 
 
 
-        //SongAdapter songAdt = new SongAdapter(v.getContext(), MainActivity.songList);
-      //  MainActivity.songView.setAdapter(songAdt);
+
         return v;
     }
 
     public ArrayList<String> LoadPlaylist(View v,File file, String name){
         ArrayList<String> mySongsInput = new ArrayList<String>();
         try{
-            // CreatePlaylist();
+
             String STORETEXT=name + ".txt";
             InputStream in = v.getContext().openFileInput(STORETEXT);
 
@@ -170,19 +149,11 @@ public class Tab1 extends Fragment{
 
                     try{
 
-                        //
 
-
-                        //
-
-                        //mySongsName.add(f.getName());
                         mySongsInput.add(str.replace(".mp3", ""));
                     }catch (Exception ex){}
                 }
-                // ArrayAdapter<String> itemsAdapter =
-                //          new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mySongsName);
-                //  ListView listView = (ListView) findViewById(R.id.listView);
-                //   listView.setAdapter(itemsAdapter);
+
 
                 in.close();
 
