@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import application.musicplayer.muse.MainActivity;
+import application.musicplayer.muse.OnSwipeTouchListener;
 import application.musicplayer.muse.Song;
 import application.musicplayer.muse.SongAdapter;
 
@@ -20,14 +22,67 @@ import android.net.Uri;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import application.musicplayer.muse.R;
 
 public class Tab3 extends Fragment  {
 
+    //query external audio
+    //ContentResolver musicResolver = getActivity().getContentResolver();
+
+    private static Tab3 t3;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.tab_3,container,false);
+        final View v = inflater.inflate(R.layout.tab_3,container,false);
+
+        v.setOnTouchListener(new OnSwipeTouchListener(v.getContext()) {
+
+            @Override
+            public void onClick() {
+                super.onClick();
+                Toast.makeText(v.getContext(), "Click", Toast.LENGTH_SHORT).show();
+                // your on click here
+            }
+
+            @Override
+            public void onDoubleClick() {
+                super.onDoubleClick();
+                // your on onDoubleClick here
+            }
+
+            @Override
+            public void onLongClick() {
+                super.onLongClick();
+                // your on onLongClick here
+            }
+
+            @Override
+            public void onSwipeUp() {
+                super.onSwipeUp();
+                Toast.makeText(v.getContext(), "Swipe Up", Toast.LENGTH_SHORT).show();
+                // your swipe up here
+            }
+
+            @Override
+            public void onSwipeDown() {
+                super.onSwipeDown();
+                // your swipe down here.
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // your swipe left here.
+            }
+
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                // your swipe right here.
+            }
+        });
         //retrieve list view
         MainActivity.songView = (ListView)v.findViewById(R.id.song_list);
         //instantiate list
@@ -86,10 +141,9 @@ public class Tab3 extends Fragment  {
     }
     //overload
     public void getSongList(ArrayList<File> testFile){
-        //query external audio
-        ContentResolver musicResolver = getActivity().getContentResolver();
+        ContentResolver s = getActivity().getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        Cursor musicCursor = s.query(musicUri, null, null, null, null);
         //iterate over results if valid
         if(musicCursor!=null && musicCursor.moveToFirst()){
             //get columns
@@ -117,6 +171,11 @@ public class Tab3 extends Fragment  {
 
         }
         MainActivity.songListTempHold = new ArrayList<File>();
+    }
+
+    public static ContentResolver getContentResolver2()
+    {
+        return t3.getActivity().getContentResolver();
     }
 
 }

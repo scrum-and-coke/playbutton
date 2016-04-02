@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
     android:background="@drawable/musempbackground">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <Button
-        android:id="@+id/shuffleButtonSelector"
+        android:id="@+id/shuffler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/shuffle_button" />
+        android:background="@drawable/shuffle_button"
+        android:layout_alignParentLeft="true"
+        android:onClick="shuffleClicked"/>
 
-</LinearLayout>
+    <Button
+        android:id="@+id/repeater"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/repeatoff"
+        android:layout_alignParentRight="true"
+        android:onClick="repeatClicked"/>
+
+    <Button
+        android:id="@+id/play_pause"
+        android:layout_height="500dp"
+        android:layout_width="420dp"
+        android:background="@drawable/mainpageplay"
+        android:layout_alignParentBottom="true"
+        android:onClick="playClicked"/>
+    </RelativeLayout>
+
+</RelativeLayout>
 
     <!--<?xml version="1.0" encoding="utf-8"?>
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

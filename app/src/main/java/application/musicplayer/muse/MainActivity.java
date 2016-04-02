@@ -1,7 +1,12 @@
 package application.musicplayer.muse;
+import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,8 +19,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.content.LocalBroadcastManager;
 import android.content.BroadcastReceiver;
@@ -31,6 +41,10 @@ import application.musicplayer.muse.tabs.Tab2;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +66,8 @@ import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Button;
 import android.view.View.OnClickListener;
-import android.graphics.Color;
+import android.view.View.OnKeyListener;
+
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -66,17 +81,16 @@ class SongInfo {
 }
 
 
-public class MainActivity extends ActionBarActivity implements MediaPlayerControl {
+public class MainActivity extends ActionBarActivity implements MediaPlayerControl{
 
     // Declaring Your View and Variables
     private SongAdapter songAdapt;
     Toolbar toolbar;
-    ViewPager pager;
+    public static ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
     public static ListView listView;
     //CharSequence Titles[]={"PlayLists","MusE","SongList"};
-    //int Numboftabs = 3;
     CharSequence Titles[] = {"PlayLists", "MusE", "SongList"};
     int Numboftabs = 3;
     public boolean songPlaying = false;
@@ -96,6 +110,11 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     //controller
     public static MusicController controller;
     private View cSelected;
+    private EditText result;
+    final Context context = this;
+    private Button button;
+    private String plName;
+    int counterC = 0;
 
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
@@ -117,6 +136,63 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
+        View v = getLayoutInflater().inflate(R.layout.tab_1, null);
+        View v2 = getLayoutInflater().inflate(R.layout.activity_main, null);
+        View v3 = (View)findViewById(R.id.main_activity_DrawerLayout);
+        final Context ctx = v.getContext();
+        final Context ctx2 = this.getApplicationContext();
+        View view = getWindow().getDecorView().getRootView();
+        v3.setOnTouchListener(new OnSwipeTouchListener(this.getApplicationContext()) {
+
+            @Override
+            public void onClick() {
+                super.onClick();
+                Toast.makeText(ctx2, "Click69", Toast.LENGTH_SHORT).show();
+                // your on click here
+            }
+
+            @Override
+            public void onDoubleClick() {
+                super.onDoubleClick();
+                // your on onDoubleClick here
+            }
+
+            @Override
+            public void onLongClick() {
+                super.onLongClick();
+                // your on onLongClick here
+            }
+
+            @Override
+            public void onSwipeUp() {
+                super.onSwipeUp();
+                Toast.makeText(MainActivity.this, "Up", Toast.LENGTH_SHORT).show();
+                // your swipe up here
+            }
+
+            @Override
+            public void onSwipeDown() {
+                super.onSwipeDown();
+                Toast.makeText(MainActivity.this, "Down", Toast.LENGTH_SHORT).show();
+                // your swipe down here.
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
+                // your swipe left here.
+            }
+
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
+                // your swipe right here.
+            }
+        });
+
+
 
         File f = new File("/data/data/application.musicplayer.muse/files");
         playListFileDir = findPlaylist(f);
@@ -154,6 +230,14 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+//        SearchManager searchManager =
+//                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView =
+//                (SearchView) menu.findItem(R.id.searchbutton).getActionView();
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(
+//                new ComponentName(getApplicationContext(), SearchResultsActivity.class)));
+//        searchView.setIconifiedByDefault(true);
         return true;
     }
 
@@ -165,35 +249,23 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
 
-          if (id == R.id.shuffleButtonSelector) {
-            musicSrv.setShuffle();
-            if (musicSrv.getShuffle()) {
-                item.setIcon(getResources().getDrawable(R.drawable.shuffleon));
-            } else
-                item.setIcon(getResources().getDrawable(R.drawable.shuffleoff));
-        }else if(id == R.id.Create_Play){
-                CreatePlaylistMode();
-
-        }else if(id == R.id.Save_Play){
-            EditText mEdit = (EditText)findViewById(R.id.editText);
-
-            CreatePlaylist(mEdit.getText().toString(), checkedPlaylist);
-            checkedPlaylist = new ArrayList<String>();
-            cPlaylistMode = false;
-            File f = new File("/data/data/application.musicplayer.muse/files");
-            playListFileDir = findPlaylist(f);
-
-            ArrayList<String> s = new ArrayList<String>();
-            for (File file : playListFileDir){
-                s.add(file.getName().replace(".txt", ""));
-            }
-            playList1 = s;
-        }else if(id == R.id.Load_Play){
-
-            loading_play = true;
-
-
-        }
+//          if (id == R.id.shuffleButtonSelector) {
+//            musicSrv.setShuffle();
+//            if (musicSrv.getShuffle()) {
+//                item.setIcon(getResources().getDrawable(R.drawable.shuffleon));
+//            } else
+//                item.setIcon(getResources().getDrawable(R.drawable.shuffleoff));
+//        if(id == R.id.Create_Play){
+//            CreatePlaylistMode();
+//            if(controller!=null)
+//            {
+//                //controller.setAnchorView(null);
+//                //controller.setVisibility(View.INVISIBLE);
+//                //controller.hide();
+//            }
+//        }else if(id == R.id.Load_Play){
+//            loading_play = true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -215,6 +287,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         pager.setCurrentItem(1, false);
         // Assiging the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        //tabs.setOnClickListener();
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
 
         // Setting Custom Color for the Scroll bar indicator of the Tab View
@@ -341,8 +414,210 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         setController();
         //else if(pl)
         controller.show(0);
+        controller.setVisibility(View.VISIBLE);
     }
 
+    public void shuffleClicked(View view) {
+        if(view.getId() == R.id.shuffler)
+        {
+            musicSrv.setShuffle();
+            if (musicSrv.getShuffle()) {
+                ((Button)findViewById(R.id.shuffler)).setBackgroundResource(R.drawable.shuffleon);
+            } else
+                ((Button)findViewById(R.id.shuffler)).setBackgroundResource(R.drawable.shuffleoff);
+        }
+
+    }
+
+    public void repeatClicked(View view)
+    {
+        if(view.getId() == R.id.repeater)
+        {
+            musicSrv.setRepeat();
+            if (musicSrv.getRepeat()) {
+                ((Button)findViewById(R.id.repeater)).setBackgroundResource(R.drawable.repeaton);
+            } else
+                ((Button)findViewById(R.id.repeater)).setBackgroundResource(R.drawable.repeatoff);
+        }
+    }
+
+    public void playClicked(View view)
+    {
+        if(view.getId() == R.id.play_pause)
+        {
+            if(musicSrv.isPng() && counterC > 0) {
+                ((Button)findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpageplay);
+                pause();
+            }else if(!musicSrv.isPng() && counterC > 0)
+            {
+                ((Button) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
+                musicSrv.go();
+            }
+
+            // Set up receiver for media player onPrepared broadcast
+            LocalBroadcastManager.getInstance(this).registerReceiver(onPrepareReceiver,
+                    new IntentFilter("MEDIA_PLAYER_PREPARED"));
+
+            if (counterC == 0) {
+                ((Button)findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
+                musicSrv.setSong(0);
+                musicSrv.playSong();
+
+                if(playbackPaused){
+                    setController();
+                    playbackPaused = false;
+                }
+                //paused = false;
+                counterC++;
+            }
+
+            if(controller==null) {
+                setController();
+                controller.setVisibility(View.INVISIBLE);
+                //controller.show(0);
+            }
+
+        }
+    }
+
+    public void closeC(View v)
+    {
+        cPlaylistMode = false;
+
+        cPlaylistMode = false;
+        File f = new File("/data/data/application.musicplayer.muse/files");
+        playListFileDir = findPlaylist(f);
+
+        LinearLayout layout = (LinearLayout)findViewById(R.id.ButtonLinearLayout);
+        layout.setVisibility(LinearLayout.INVISIBLE);
+
+        ArrayList<String> s = new ArrayList<String>();
+        for (File file : playListFileDir){
+            s.add(file.getName().replace(".txt", ""));
+        }
+//        playList1 = s;
+
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, s);
+        listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(itemsAdapter);
+
+    }
+
+    public void test(View v)
+    {
+
+        // components from main.xml
+        button = (Button) findViewById(R.id.buttonPrompt);
+
+        // add button listener
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+                // get prompts.xml view
+                LayoutInflater li = LayoutInflater.from(context);
+                View promptsView = li.inflate(R.layout.prompts, null);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        context);
+
+                // set prompts.xml to alertdialog builder
+                alertDialogBuilder.setView(promptsView);
+
+                final EditText userInput = (EditText) promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // get user input and set it to result
+                                        // edit text
+                                        //result.setText(userInput.getText());
+                                        CreatePlaylist(userInput.getText().toString(), checkedPlaylist);
+                                        checkedPlaylist = new ArrayList<String>();
+                                        cPlaylistMode = false;
+                                        File f = new File("/data/data/application.musicplayer.muse/files");
+                                        playListFileDir = findPlaylist(f);
+
+                                        ArrayList<String> s = new ArrayList<String>();
+                                        for (File file : playListFileDir){
+                                            s.add(file.getName().replace(".txt", ""));
+                                        }
+                                        playList1 = s;
+                                        //bring to songlist
+                                        loading_play = true;
+
+                                        try {
+                                            InputStream in = openFileInput(userInput.getText().toString() + ".txt");
+                                            if (in != null) {
+                                                InputStreamReader tmp = new InputStreamReader(in);
+                                                BufferedReader reader = new BufferedReader(tmp);
+                                                String str;
+//                                                StringBuilder buf = new StringBuilder();
+//                                                MediaMetadataRetriever metaRetriver;
+//                                                metaRetriver = new MediaMetadataRetriever();
+                                                while ((str = reader.readLine()) != null) {
+                                                    File test = null;
+                                                    for (File f2 : MainActivity.song) {
+                                                        String x = f2.getName();
+                                                        if (f2.getName().equals(str)) {
+                                                            test = new File(f2.getAbsolutePath());
+                                                            break;
+                                                        }
+                                                    }
+                                                    songListTempHold.add(test);
+                                                }
+
+                                            }
+                                            in.close();
+                                        } catch (Exception ex) {
+                                            System.out.print(ex.getMessage());
+                                        }
+
+                                        //getSongList(songListTempHold);
+                                        //Tab3.getSongList(playListFileDir);
+                                        pager.setCurrentItem(3);
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
+
+            }
+        });
+    }
+
+
+    public void cnclC(View view)
+    {
+        cPlaylistMode = false;
+        File f = new File("/data/data/application.musicplayer.muse/files");
+        playListFileDir = findPlaylist(f);
+
+        ArrayList<String> s = new ArrayList<String>();
+        for (File file : playListFileDir){
+            s.add(file.getName().replace(".txt", ""));
+        }
+        playList1 = s;
+
+//        ArrayAdapter<String> itemsAdapter =
+//                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, playList1);
+//        listView = (ListView) view.findViewById(R.id.listView);
+//        listView.setAdapter(itemsAdapter);
+    }
     @Override
     public boolean canPause() {
         return true;
@@ -424,14 +699,13 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         });
         //set and show
         controller.setMediaPlayer(this);
-        controller.setAnchorView(findViewById(R.id.song_list));
+        controller.setAnchorView(findViewById(R.id.mediaC));
         controller.setEnabled(true);
     }
 
     private void playNext() {
         musicSrv.playNext();
         if (playbackPaused) {
-            //setController();
             playbackPaused = false;
         }
         controller.show(0);
@@ -440,7 +714,6 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
     private void playPrev() {
         musicSrv.playPrev();
         if (playbackPaused) {
-            //setController();
             playbackPaused = false;
         }
         controller.show(0);
@@ -457,16 +730,12 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
     public void onResume() {
         super.onResume();
         if (paused) {
-            //setController();
             paused = false;
         }
-
 
         // Set up receiver for media player onPrepared broadcast
         LocalBroadcastManager.getInstance(this).registerReceiver(onPrepareReceiver,
                 new IntentFilter("MEDIA_PLAYER_PREPARED"));
-        //controller.show(0);
-
     }
 
 
@@ -503,31 +772,18 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
 
 
     public void CreatePlaylist(String name, ArrayList<String> listName){
-
-
-
         try {
             String STORETEXT=name + ".txt";
             OutputStreamWriter out = new OutputStreamWriter(openFileOutput(STORETEXT, 0));
             MediaMetadataRetriever metaRetriver;
             metaRetriver = new MediaMetadataRetriever();
-
-
-
             for (String x : listName) {
-
                 try {
-
-
                     out.write(x);
                     out.write('\n');
                 } catch (Exception e) {
-
-
                 }
-
             }
-
             out.close();
         } catch (Exception ex) {
             System.out.print(ex.getMessage());
@@ -572,6 +828,15 @@ cPlaylistMode = true;
     ArrayList<File> song = new ArrayList<File>();
     ArrayList<String> songs = new ArrayList<String>();
 
+    LinearLayout layout = (LinearLayout)findViewById(R.id.ButtonLinearLayout);
+    layout.setVisibility(LinearLayout.VISIBLE);
+//    EditText et = (EditText)findViewById(R.id.editText);
+//    et.setVisibility(EditText.VISIBLE);
+    if(controller!=null) {
+        controller.clearFocus();
+        controller.removeAllViews();
+        controller.setEnabled(false);
+    }
     song = findSongs(Environment.getExternalStorageDirectory());
     for(File f : song){
         songs.add(f.getName().replace(".mp3", ""));
@@ -585,8 +850,6 @@ cPlaylistMode = true;
 
 
 }
-
-
 
 }
 

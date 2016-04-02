@@ -1,27 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
 
+    <!--<EditText-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_weight="0.075"-->
+    <!--android:id="@+id/editText"-->
+    <!--android:visibility="gone"-->
+    <!--android:hint="Playlist Name..."-->
+    <!--android:editable="true"-->
+    <!--android:focusable="true"-->
+    <!--android:focusableInTouchMode="true"-->
+    <!--android:onClick="plName"/>-->
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
         android:id="@+id/listView"
-
+        android:layout_weight="0.84"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/editText" />
+        android:fadeScrollbars="false"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:text="Playlist Name..." />
+    <LinearLayout
+        android:id="@+id/ButtonLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        >
 
+        <Button
+            android:id="@+id/buttonPrompt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Next"
+            android:onClick="test"/>
+        <Button
+            android:id="@+id/buttonClose"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Exit"
+            android:onClick="closeC"/>
+        <!--<EditText-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.075"-->
+            <!--android:id="@+id/editText"-->
+            <!--android:visibility="gone"-->
+            <!--android:hint="Playlist Name..."-->
+            <!--android:editable="true"-->
+            <!--android:focusable="true"-->
+            <!--android:focusableInTouchMode="true"-->
+            <!--android:onClick="plName"/>-->
+        <!--<Button-->
+            <!--android:id="@+id/savePL"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.5"-->
+            <!--android:text="Save"-->
+            <!--android:onClick="saveC"/>-->
+        <!--<Button-->
+            <!--android:id="@+id/cnclPL"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.5"-->
+            <!--android:text="Cancel"-->
+            <!--android:onClick="cnclC"/>-->
+    </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

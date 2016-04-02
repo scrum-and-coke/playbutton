@@ -35,6 +35,7 @@ MediaPlayer.OnCompletionListener {
 	private static final int NOTIFY_ID=1;
 	//shuffle flag and random
 	private boolean shuffle=false;
+	private boolean repeat=false;
 	private Random rand;
 
 	public void onCreate(){
@@ -199,6 +200,10 @@ MediaPlayer.OnCompletionListener {
 				newSong=rand.nextInt(songs.size());
 			}
 			songPosn=newSong;
+		}else if(repeat)
+		{
+			int newSong = songPosn;
+			songPosn = newSong;
 		}
 		else{
 			songPosn++;
@@ -217,6 +222,22 @@ MediaPlayer.OnCompletionListener {
 		if(shuffle) shuffle=false;
 		else shuffle=true;
 	}
+
+	public void setRepeat(){
+		if(repeat) repeat=false;
+		else repeat=true;
+	}
+
+	public void setPlay(){
+		if(isPng()) pausePlayer();
+		else{
+			setSong(getPosn());
+			playSong();
+		}
+	}
+
+	public boolean getRepeat() { return repeat; }
+
 	public boolean getShuffle(){
 		return shuffle;
 	}
