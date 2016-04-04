@@ -16,6 +16,7 @@ public class SearchResultsActivity extends Activity {
         handleIntent(getIntent());
     }
 
+
     @Override
     protected void onNewIntent(Intent intent) {
         handleIntent(intent);

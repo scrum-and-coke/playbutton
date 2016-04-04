@@ -77,18 +77,9 @@ import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 
-
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-class SongInfo {
-    String Album = "";
-    String Artist = "";
-    String Genre = "";
-    String Year = "";
-
-}
-
 
 public class MainActivity extends ActionBarActivity implements MediaPlayerControl{
 
