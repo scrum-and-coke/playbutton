@@ -21,7 +21,7 @@ public class Clusterer {
         }
     }
 
-    private MusicLocation mergeCluster(List<MusicLocation> locations) {
+    private static MusicLocation mergeCluster(List<MusicLocation> locations) {
         double minLat = 999999999.9;
         double minLong = 999999999.9;
         double maxLat = 0;
@@ -62,10 +62,10 @@ public class Clusterer {
         double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
 
         //reconvert to degrees
-        Location l = new Location("");
-        l.setLatitude(Math.toDegrees(lat3));
-        l.setLongitude(Math.toDegrees(lon3));
-        return l;
+        Location loc = new Location("");
+        loc.setLatitude(Math.toDegrees(lat3));
+        loc.setLongitude(Math.toDegrees(lon3));
+        return loc;
     }
 
     private static class Node {
@@ -82,11 +82,8 @@ public class Clusterer {
 
     private HashMap<Node, LinkedList<Node>> _graph;
 
-    public Clusterer(List<MusicLocation> dataset) {
+    public Clusterer(List<MusicLocation> dataset, double eps) {
         _graph = new HashMap<Node, LinkedList<Node>>(dataset.size());
-    }
-
-    List<MusicLocation> DBSCAN(List<MusicLocation> dataset, float eps, int minPts) {
 
         for (int i = 0; i < dataset.size(); ++i) {
             for (int j = 0; j < i; ++j) {
@@ -100,6 +97,9 @@ public class Clusterer {
                 }
             }
         }
+    }
+
+    List<MusicLocation> DBSCAN(int minPts) {
 
         List<List<MusicLocation>> clusters = new ArrayList<List<MusicLocation>>();
         ArrayList<MusicLocation> c = new ArrayList<MusicLocation>();
