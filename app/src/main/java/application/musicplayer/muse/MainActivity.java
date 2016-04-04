@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -101,7 +102,8 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
 
     public static boolean tab1Mode = true;
     public static ArrayList<Playlist> playlists = new ArrayList<Playlist>();
-    public static Playlist songlist = new Playlist();
+    public static Playlist songList = new Playlist();
+    public static Playlist defaultSongList = new Playlist();
 
 
     public static ArrayList<File> playListFileDir = new ArrayList<File>();
@@ -119,7 +121,6 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     private String tColor = "original";
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
-    public static boolean loadPlaylist = false;
     private boolean show = false;
 
 public static ArrayList<File> songListTempHold = new ArrayList<File>();
@@ -130,8 +131,6 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
-    public static Boolean cPlaylistMode = false;
-    public static ArrayList<Song> checkedPlaylist = new ArrayList<Song>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,28 +138,40 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
-        songlist =
-
-        File f = new File("/data/data/application.musicplayer.muse/files");
-        playListFileDir = findPlaylist(f);
-        for (File file : playListFileDir) {
-            playList1.add(file.getName());
-        }
-        ArrayList<String> tempList = new ArrayList<String>();
-        for (String str : playList1) {
-            str = str.replace(".txt", "");
-            tempList.add(str);
-
-        }
-        song = findSongs(Environment.getExternalStorageDirectory());
-        playList1 = tempList;
-
-
-
+        getSongList();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    //method to retrieve song info from device
+    public void getSongList() {
+        //query external audio
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        //iterate over results if valid
+        if(musicCursor!=null && musicCursor.moveToFirst()){
+            //get columns
+            int titleColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ARTIST);
+            //add songs to list
+            do {
+                long thisId = musicCursor.getLong(idColumn);
+                Uri uri = ContentUris.withAppendedId(
+                        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        thisId);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                songList.add(new Song(uri, thisTitle, thisArtist));
+            }
+            while (musicCursor.moveToNext());
+        }
     }
 
     //Broadcast receiver to determine when music player has been prepared

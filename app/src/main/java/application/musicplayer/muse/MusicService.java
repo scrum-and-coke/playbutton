@@ -2,6 +2,7 @@ package application.musicplayer.muse;
 import android.graphics.Color;
 import android.support.v4.content.LocalBroadcastManager;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import android.app.Activity;
 import android.app.Notification;
@@ -25,7 +26,7 @@ MediaPlayer.OnCompletionListener {
 	//media player
 	private MediaPlayer player;
 	//song list
-	private ArrayList<Song> songs;
+	private List<Song> songs;
 	//current position
 	private int songPosn;
 	//binder
@@ -64,8 +65,8 @@ MediaPlayer.OnCompletionListener {
 	}
 
 	//pass song list
-	public void setList(ArrayList<Song> theSongs){
-		songs=theSongs;
+	public void setList(Playlist theSongs){
+		songs=theSongs.songList;
 	}
 
 	//binder
@@ -97,15 +98,11 @@ MediaPlayer.OnCompletionListener {
 		Song playSong = songs.get(songPosn);
 		//get title
 		songTitle=playSong.getTitle();
-		//get id
-		long currSong = playSong.getID();
-		//set uri
-		Uri trackUri = ContentUris.withAppendedId(
-				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-				currSong);
+		//get uri
+		Uri currSong = playSong.getUri();
 		//set the data source
 		try{ 
-			player.setDataSource(getApplicationContext(), trackUri);
+			player.setDataSource(getApplicationContext(), currSong);
 		}
 		catch(Exception e){
 			Log.e("MUSIC SERVICE", "Error setting data source", e);
