@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import application.musicplayer.muse.MainActivity;
+import application.musicplayer.muse.OnSwipeTouchListener;
 import application.musicplayer.muse.Song;
 import application.musicplayer.muse.SongAdapter;
 
@@ -20,21 +22,28 @@ import android.net.Uri;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import application.musicplayer.muse.R;
 
 public class Tab3 extends Fragment  {
 
+    //query external audio
+    //ContentResolver musicResolver = getActivity().getContentResolver();
+
+    private static Tab3 t3;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.tab_3,container,false);
+        final View v = inflater.inflate(R.layout.tab_3,container,false);
+        //MainActivity.loading_play = false;
         //retrieve list view
         MainActivity.songView = (ListView)v.findViewById(R.id.song_list);
         //instantiate list
         MainActivity.songList = new ArrayList<Song>();
         //get songs from device
         //contextOfApplication = Tab3.getContextOfApplication();
-        if(MainActivity.loading_play == false) {
+        if(MainActivity.loadPlaylist == false) {
             getSongList();
         }else{
             getSongList(MainActivity.songListTempHold);
@@ -42,7 +51,7 @@ public class Tab3 extends Fragment  {
             MainActivity.songListTemp = new ArrayList<Song>();
         }
 
-        MainActivity.loading_play = false;
+        MainActivity.loadPlaylist = false;
         //sort alphabetically by title
         Collections.sort(MainActivity.songList, new Comparator<Song>() {
             public int compare(Song a, Song b) {
@@ -86,10 +95,9 @@ public class Tab3 extends Fragment  {
     }
     //overload
     public void getSongList(ArrayList<File> testFile){
-        //query external audio
-        ContentResolver musicResolver = getActivity().getContentResolver();
+        ContentResolver s = getActivity().getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        Cursor musicCursor = s.query(musicUri, null, null, null, null);
         //iterate over results if valid
         if(musicCursor!=null && musicCursor.moveToFirst()){
             //get columns
@@ -117,6 +125,11 @@ public class Tab3 extends Fragment  {
 
         }
         MainActivity.songListTempHold = new ArrayList<File>();
+    }
+
+    public static ContentResolver getContentResolver2()
+    {
+        return t3.getActivity().getContentResolver();
     }
 
 }

@@ -1,17 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
     android:background="@drawable/musempbackground">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <Button
-        android:id="@+id/shuffleButtonSelector"
+        android:id="@+id/shuffler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/shuffle_button" />
+        android:background="@drawable/shuffle_button"
+        android:layout_alignParentLeft="true"
+        android:onClick="shuffleClicked"
+        android:layout_marginTop="100dp"/>
 
-</LinearLayout>
+    <Button
+        android:id="@+id/repeater"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/repeatoff"
+        android:layout_alignParentRight="true"
+        android:onClick="repeatClicked"
+        android:layout_marginTop="100dp"/>
+
+
+
+    <ImageButton
+        android:id="@+id/play_pause"
+        android:layout_height="390dp"
+        android:layout_width="350dp"
+        android:src="@drawable/fab3"
+        android:background="@drawable/mainpageplay"
+        android:layout_centerInParent="true"
+        android:onClick="playClicked"/>
+
+    <ImageButton
+        android:id="@+id/skipback"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/backwards"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="110dp"
+        android:onClick="nextSongClicked"/>
+
+    <ImageButton
+        android:id="@+id/skipforward"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/forward"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="110dp"
+        android:onClick="prevSongClicked"/>
+    <TextView
+        android:id="@+id/getSongTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:textSize="24dp"
+        android:layout_marginBottom="40dp"
+        />
+
+    </RelativeLayout>
+
+</RelativeLayout>
 
     <!--<?xml version="1.0" encoding="utf-8"?>
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

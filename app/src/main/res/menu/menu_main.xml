@@ -3,19 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context="application.musicplayer.muse.MainActivity">
 
     <item
-        android:id="@+id/shuffleButtonSelector"
+        android:id="@+id/mctoggle"
         android:orderInCategory="1"
-        android:icon="@drawable/shuffle_button"
-        app:showAsAction="always" android:title="Shuffle"/>
+        android:icon="@drawable/musemcup"
+        app:showAsAction="collapseActionView|ifRoom"
+        android:title="Controls"/>
+
+    <item
+        android:id="@+id/searchbutton"
+        android:orderInCategory="2"
+        android:icon="@drawable/search"
+        app:showAsAction="collapseActionView|ifRoom"
+        android:title="Search"
+        android:actionViewClass="android.widget.SearchView"/>
 
 
-    <item android:id="@+id/Create_Play" android:title="Create Playlist"
+    <item android:id="@+id/theme_change" android:title="Theme"
+        android:orderInCategory="100" app:showAsAction="never">
+        <menu>
+            <group android:id="@+id/group2" android:checkableBehavior="single">
+                <item android:id="@+id/submenu1" android:title="Original" />
+                <item android:id="@+id/submenu2" android:title="Blue" />
+                <item android:id="@+id/submenu3" android:title="Green" />
+                <item android:id="@+id/submenu4" android:title="Yellow" />
+                <item android:id="@+id/submenu5" android:title="Red" />
+                <item android:id="@+id/submenu6" android:title="Pink" />
+                <item android:id="@+id/submenu7" android:title="Purple" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/settings" android:title="Settings"
         android:orderInCategory="100" app:showAsAction="never"
         />
-    <item android:id="@+id/Save_Play" android:title="Save Playlist"
-        android:orderInCategory="100" app:showAsAction="never"
-        />
-    <item android:id="@+id/Load_Play" android:title="Load Playlist"
+    <item android:id="@+id/Load_Play" android:title="About Us"
         android:orderInCategory="100" app:showAsAction="never"
         />
 </menu>

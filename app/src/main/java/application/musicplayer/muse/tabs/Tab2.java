@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
+
 import application.musicplayer.muse.MainActivity;
+import application.musicplayer.muse.OnSwipeTouchListener;
 import application.musicplayer.muse.R;
 
 
@@ -17,7 +20,7 @@ public class Tab2 extends Fragment {
     //public static View v;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       View v = inflater.inflate(R.layout.tab_2,container,false);
+       final View v = inflater.inflate(R.layout.tab_2,container,false);
         //MainActivity.noShowController.show(0);
 //        imageButton = new Button(getActivity());
         return v;

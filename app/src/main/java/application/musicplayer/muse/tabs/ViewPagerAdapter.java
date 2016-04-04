@@ -5,6 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.app.Activity;
+import android.view.View;
+
+import application.musicplayer.muse.MainActivity;
 
 /**
  * Created by Edwin on 15/02/2015.
@@ -31,19 +34,33 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         if(position == 0)// if the position is 0 we are returning the First tab
         {
             Tab1 tab1 = new Tab1();
+            if(MainActivity.controller!=null) {
+                MainActivity.controller.setVisibility(View.INVISIBLE);
+                //MainActivity.controller.setVisibility(View.GONE);
+            }
             return tab1;
         }
         else if(position == 1)
         {
             Tab2 tab2 = new Tab2();
+            if(MainActivity.controller!=null) {
+                MainActivity.controller.setVisibility(View.INVISIBLE);
+                //MainActivity.controller.setVisibility(View.GONE);
+            }
             return tab2;
         }
-        else             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
+        else if(position == 2)             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
         {
             Tab3 tab3 = new Tab3();
+            if(MainActivity.controller!=null) {
+                MainActivity.controller.setVisibility(View.INVISIBLE);
+            }
             return tab3;
         }
-
+        if(MainActivity.controller!=null) {
+            MainActivity.controller.setVisibility(View.INVISIBLE);
+        }
+        return null;
     }
 
     // This method return the titles for the Tabs in the Tab Strip
