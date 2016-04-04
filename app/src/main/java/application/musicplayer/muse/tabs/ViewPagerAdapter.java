@@ -58,7 +58,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             return tab3;
         }
         if(MainActivity.controller!=null) {
-            MainActivity.controller.setVisibility(View.VISIBLE);
+            MainActivity.controller.setVisibility(View.INVISIBLE);
         }
         return null;
     }

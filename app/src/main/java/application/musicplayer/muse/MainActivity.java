@@ -1,4 +1,6 @@
 package application.musicplayer.muse;
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
@@ -10,8 +12,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -26,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.SubMenu;
 import android.view.View;
 import android.support.v4.content.LocalBroadcastManager;
 import android.content.BroadcastReceiver;
@@ -38,9 +43,13 @@ import application.musicplayer.muse.sliding.SlidingTabLayout;
 import application.musicplayer.muse.tabs.ViewPagerAdapter;
 import application.musicplayer.muse.tabs.Tab2;
 
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -112,13 +121,15 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     private View cSelected;
     private EditText result;
     final Context context = this;
-    private Button button;
+    private ImageButton button;
     private String plName;
-    int counterC = 0;
-
+    private int counterC = 0;
+    private String tColor = "original";
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
-    public static boolean loading_play = false;
+    public static boolean loadPlaylist = false;
+    private boolean show = false;
+
 public static ArrayList<File> songListTempHold = new ArrayList<File>();
 
     public Button imageButton;
@@ -136,63 +147,6 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
-        View v = getLayoutInflater().inflate(R.layout.tab_1, null);
-        View v2 = getLayoutInflater().inflate(R.layout.activity_main, null);
-        View v3 = (View)findViewById(R.id.main_activity_DrawerLayout);
-        final Context ctx = v.getContext();
-        final Context ctx2 = this.getApplicationContext();
-        View view = getWindow().getDecorView().getRootView();
-        v3.setOnTouchListener(new OnSwipeTouchListener(this.getApplicationContext()) {
-
-            @Override
-            public void onClick() {
-                super.onClick();
-                Toast.makeText(ctx2, "Click69", Toast.LENGTH_SHORT).show();
-                // your on click here
-            }
-
-            @Override
-            public void onDoubleClick() {
-                super.onDoubleClick();
-                // your on onDoubleClick here
-            }
-
-            @Override
-            public void onLongClick() {
-                super.onLongClick();
-                // your on onLongClick here
-            }
-
-            @Override
-            public void onSwipeUp() {
-                super.onSwipeUp();
-                Toast.makeText(MainActivity.this, "Up", Toast.LENGTH_SHORT).show();
-                // your swipe up here
-            }
-
-            @Override
-            public void onSwipeDown() {
-                super.onSwipeDown();
-                Toast.makeText(MainActivity.this, "Down", Toast.LENGTH_SHORT).show();
-                // your swipe down here.
-            }
-
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeLeft();
-                Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
-                // your swipe left here.
-            }
-
-            @Override
-            public void onSwipeRight() {
-                super.onSwipeRight();
-                Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
-                // your swipe right here.
-            }
-        });
-
-
 
         File f = new File("/data/data/application.musicplayer.muse/files");
         playListFileDir = findPlaylist(f);
@@ -221,52 +175,174 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         @Override
         public void onReceive(Context c, Intent i) {
             // When music player has been prepared, show controller
-            controller.show(0);
+            //controller.show(0);
         }
     };
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem themeItem = menu.findItem(R.id.theme_change);
+        SubMenu subC = themeItem.getSubMenu();
+        subC.findItem(R.id.submenu1).setChecked(true);
 
-//        SearchManager searchManager =
-//                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        SearchView searchView =
-//                (SearchView) menu.findItem(R.id.searchbutton).getActionView();
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(
-//                new ComponentName(getApplicationContext(), SearchResultsActivity.class)));
-//        searchView.setIconifiedByDefault(true);
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
+
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
+        //int id = item.getItemId();
 
-//          if (id == R.id.shuffleButtonSelector) {
-//            musicSrv.setShuffle();
-//            if (musicSrv.getShuffle()) {
-//                item.setIcon(getResources().getDrawable(R.drawable.shuffleon));
-//            } else
-//                item.setIcon(getResources().getDrawable(R.drawable.shuffleoff));
-//        if(id == R.id.Create_Play){
-//            CreatePlaylistMode();
-//            if(controller!=null)
-//            {
-//                //controller.setAnchorView(null);
-//                //controller.setVisibility(View.INVISIBLE);
-//                //controller.hide();
-//            }
-//        }else if(id == R.id.Load_Play){
-//            loading_play = true;
-//        }
+        View v = (View)findViewById(R.id.main_activity_DrawerLayout);
+        SlidingTabLayout stl = (SlidingTabLayout)findViewById(R.id.tabs);
+        Toolbar tb = (Toolbar)findViewById(R.id.tool_bar);
 
+        ImageButton ib = (ImageButton)findViewById(R.id.play_pause);
+        ImageButton ib2 = (ImageButton)findViewById(R.id.skipback);
+        ImageButton ib3 = (ImageButton)findViewById(R.id.skipforward);
+
+        //MenuItem mctoggler = (MenuItem)findViewById(R.id.mctoggle);
+
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        switch(item.getItemId()) {
+            case R.id.submenu1:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
+                    tb.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.ColorPrimaryDark));
+                    tColor = "original";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwards));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forward));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpageplay));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepause));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.submenu2:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.blue_500));
+                    tb.setBackgroundColor(getResources().getColor(R.color.blue_500));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.blue_700));
+                    tColor = "blue";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwardsblue));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forwardblue));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpageplayblue));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepauseblue));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.submenu3:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.green_500));
+                    tb.setBackgroundColor(getResources().getColor(R.color.green_500));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.green_700));
+                    tColor = "green";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwardsgreen));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forwardgreen));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpageplaygreen));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepausegreen));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.submenu4:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.yellow_500));
+                    tb.setBackgroundColor(getResources().getColor(R.color.yellow_500));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.yellow_700));
+                    tColor = "yellow";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwardsyellow));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forwardyellow));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpageplayyellow));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepauseyellow));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.submenu5:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.red_500));
+                    tb.setBackgroundColor(getResources().getColor(R.color.red_500));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.red_700));
+                    tColor = "red";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwardsred));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forwardred));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagered));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepausered));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.submenu6:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.pink_500));
+                    tb.setBackgroundColor(getResources().getColor(R.color.pink_500));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.pink_700));
+                    tColor = "pink";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwardspink));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forwardpink));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepink));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepausepink));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.submenu7:
+                if (item.isChecked()) item.setChecked(false);
+                else{
+                    stl.setBackgroundColor(getResources().getColor(R.color.purple_500));
+                    tb.setBackgroundColor(getResources().getColor(R.color.purple_500));
+                    window.setStatusBarColor(this.getResources().getColor(R.color.purple_700));
+                    tColor = "purple";
+                    ib2.setBackground(getResources().getDrawable(R.drawable.backwardspurple));
+                    ib3.setBackground(getResources().getDrawable(R.drawable.forwardpurple));
+                    if(!musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepurple));
+                    else if(musicSrv.isPng())
+                        ib.setBackground(getResources().getDrawable(R.drawable.mainpagepausepurple));
+                    item.setChecked(true);
+                }
+                return true;
+            case R.id.mctoggle:
+                if(controller!= null)
+                {
+                    if(!show) {
+                        controller.setVisibility(View.VISIBLE);
+                        controller.show(0);
+                        item.setIcon(R.drawable.musemcdown);
+                        show = true;
+                    }else if(show)
+                    {
+                        item.setIcon(R.drawable.musemcup);
+                        controller.setVisibility(View.INVISIBLE);
+                        show = false;
+                    }
+                }
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -393,8 +469,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         );
         AppIndex.AppIndexApi.start(client, viewAction);
     }
-   // private View cSelected;
-    //user song select
+
     public void songClicked(View view) {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
@@ -413,8 +488,8 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         }
         setController();
         //else if(pl)
-        controller.show(0);
-        controller.setVisibility(View.VISIBLE);
+        //controller.show(0);
+        //controller.setVisibility(View.VISIBLE);
     }
 
     public void shuffleClicked(View view) {
@@ -441,74 +516,10 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         }
     }
 
-    public void playClicked(View view)
+    public void addPlayList(View view)
     {
-        if(view.getId() == R.id.play_pause)
-        {
-            if(musicSrv.isPng() && counterC > 0) {
-                ((Button)findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpageplay);
-                pause();
-            }else if(!musicSrv.isPng() && counterC > 0)
-            {
-                ((Button) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
-                musicSrv.go();
-            }
-
-            // Set up receiver for media player onPrepared broadcast
-            LocalBroadcastManager.getInstance(this).registerReceiver(onPrepareReceiver,
-                    new IntentFilter("MEDIA_PLAYER_PREPARED"));
-
-            if (counterC == 0) {
-                ((Button)findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
-                musicSrv.setSong(0);
-                musicSrv.playSong();
-
-                if(playbackPaused){
-                    setController();
-                    playbackPaused = false;
-                }
-                //paused = false;
-                counterC++;
-            }
-
-            if(controller==null) {
-                setController();
-                controller.setVisibility(View.INVISIBLE);
-                //controller.show(0);
-            }
-
-        }
-    }
-
-    public void closeC(View v)
-    {
-        cPlaylistMode = false;
-
-        cPlaylistMode = false;
-        File f = new File("/data/data/application.musicplayer.muse/files");
-        playListFileDir = findPlaylist(f);
-
-        LinearLayout layout = (LinearLayout)findViewById(R.id.ButtonLinearLayout);
-        layout.setVisibility(LinearLayout.INVISIBLE);
-
-        ArrayList<String> s = new ArrayList<String>();
-        for (File file : playListFileDir){
-            s.add(file.getName().replace(".txt", ""));
-        }
-//        playList1 = s;
-
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, s);
-        listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(itemsAdapter);
-
-    }
-
-    public void test(View v)
-    {
-
         // components from main.xml
-        button = (Button) findViewById(R.id.buttonPrompt);
+        button = (ImageButton) findViewById(R.id.next);
 
         // add button listener
         button.setOnClickListener(new OnClickListener() {
@@ -534,9 +545,6 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
                         .setPositiveButton("OK",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        // get user input and set it to result
-                                        // edit text
-                                        //result.setText(userInput.getText());
                                         CreatePlaylist(userInput.getText().toString(), checkedPlaylist);
                                         checkedPlaylist = new ArrayList<String>();
                                         cPlaylistMode = false;
@@ -544,42 +552,24 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
                                         playListFileDir = findPlaylist(f);
 
                                         ArrayList<String> s = new ArrayList<String>();
-                                        for (File file : playListFileDir){
+                                        for (File file : playListFileDir) {
                                             s.add(file.getName().replace(".txt", ""));
                                         }
                                         playList1 = s;
                                         //bring to songlist
-                                        loading_play = true;
+                                        loadPlaylist = true;
 
-                                        try {
-                                            InputStream in = openFileInput(userInput.getText().toString() + ".txt");
-                                            if (in != null) {
-                                                InputStreamReader tmp = new InputStreamReader(in);
-                                                BufferedReader reader = new BufferedReader(tmp);
-                                                String str;
-//                                                StringBuilder buf = new StringBuilder();
-//                                                MediaMetadataRetriever metaRetriver;
-//                                                metaRetriver = new MediaMetadataRetriever();
-                                                while ((str = reader.readLine()) != null) {
-                                                    File test = null;
-                                                    for (File f2 : MainActivity.song) {
-                                                        String x = f2.getName();
-                                                        if (f2.getName().equals(str)) {
-                                                            test = new File(f2.getAbsolutePath());
-                                                            break;
-                                                        }
-                                                    }
-                                                    songListTempHold.add(test);
-                                                }
+                                        ImageButton ib = (ImageButton) findViewById(R.id.addPL);
+                                        ib.setVisibility(View.VISIBLE);
 
-                                            }
-                                            in.close();
-                                        } catch (Exception ex) {
-                                            System.out.print(ex.getMessage());
-                                        }
+                                        ImageButton ib2 = (ImageButton) findViewById(R.id.next);
+                                        ib2.setVisibility(View.INVISIBLE);
 
-                                        //getSongList(songListTempHold);
-                                        //Tab3.getSongList(playListFileDir);
+                                        ImageButton ib3 = (ImageButton) findViewById(R.id.cancel);
+                                        ib3.setVisibility(View.INVISIBLE);
+
+                                        Tab1.setPlayList(userInput.getText().toString());
+
                                         pager.setCurrentItem(3);
                                     }
                                 })
@@ -598,26 +588,136 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
 
             }
         });
+
+        CreatePlaylistMode();
     }
 
-
-    public void cnclC(View view)
+    public void playClicked(View view)
     {
+        if(view.getId() == R.id.play_pause)
+        {
+            if(musicSrv.isPng() && counterC > 0) {
+                switch(tColor) {
+                    case "original":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpageplay);
+                        break;
+                    case "blue":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpageplayblue);
+                        break;
+                    case "green":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpageplaygreen);
+                        break;
+                    case "yellow":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpageplayyellow);
+                        break;
+                    case "red":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagered);
+                        break;
+                    case "pink":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepink);
+                    break;
+                    case "purple":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepurple);
+                    break;
+                }
+                pause();
+            }else if(!musicSrv.isPng() && counterC > 0)
+            {
+                switch(tColor) {
+                    case "original":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
+                        break;
+                    case "blue":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepauseblue);
+                        break;
+                    case "green":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepausegreen);
+                        break;
+                    case "yellow":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepauseyellow);
+                        break;
+                    case "red":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepausered);
+                        break;
+                    case "pink":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepausepink);
+                        break;
+                    case "purple":
+                        ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepausepurple);
+                    break;
+                }
+                musicSrv.go();
+            }
+
+            // Set up receiver for media player onPrepared broadcast
+            LocalBroadcastManager.getInstance(this).registerReceiver(onPrepareReceiver,
+                    new IntentFilter("MEDIA_PLAYER_PREPARED"));
+
+            if (counterC == 0) {
+                ((ImageButton)findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
+                musicSrv.setSong(0);
+                musicSrv.playSong();
+
+                if(playbackPaused){
+                    setController();
+                    controller.setVisibility(View.INVISIBLE);
+                    playbackPaused = false;
+                }
+                //paused = false;
+                counterC++;
+            }
+
+            if(controller==null) {
+                setController();
+                controller.setVisibility(View.INVISIBLE);
+                //controller.show(0);
+            }
+            TextView tv = (TextView)findViewById(R.id.getSongTitle);
+            tv.setText(musicSrv.getSongTitle());
+        }
+    }
+
+    public void nextSongClicked(View v)
+    {
+        musicSrv.playNext();
+    }
+
+    public void prevSongClicked(View v)
+    {
+        musicSrv.playPrev();
+    }
+
+    public void closeC(View v)
+    {
+        ImageButton ib = (ImageButton) findViewById(R.id.addPL);
+        ib.setVisibility(View.VISIBLE);
+
+        ImageButton ib2 = (ImageButton) findViewById(R.id.next);
+        ib2.setVisibility(View.INVISIBLE);
+
+        ImageButton ib3 = (ImageButton) findViewById(R.id.cancel);
+        ib3.setVisibility(View.INVISIBLE);
+
         cPlaylistMode = false;
         File f = new File("/data/data/application.musicplayer.muse/files");
         playListFileDir = findPlaylist(f);
+
+//        LinearLayout layout = (LinearLayout)findViewById(R.id.ButtonLinearLayout);
+//        layout.setVisibility(LinearLayout.INVISIBLE);
 
         ArrayList<String> s = new ArrayList<String>();
         for (File file : playListFileDir){
             s.add(file.getName().replace(".txt", ""));
         }
-        playList1 = s;
+//        playList1 = s;
 
-//        ArrayAdapter<String> itemsAdapter =
-//                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, playList1);
-//        listView = (ListView) view.findViewById(R.id.listView);
-//        listView.setAdapter(itemsAdapter);
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, s);
+        listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(itemsAdapter);
+
     }
+
     @Override
     public boolean canPause() {
         return true;
@@ -699,7 +799,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         });
         //set and show
         controller.setMediaPlayer(this);
-        controller.setAnchorView(findViewById(R.id.mediaC));
+        controller.setAnchorView(findViewById(R.id.song_list));
         controller.setEnabled(true);
     }
 
@@ -708,7 +808,8 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         if (playbackPaused) {
             playbackPaused = false;
         }
-        controller.show(0);
+        controller.setVisibility(View.INVISIBLE);
+        //controller.show(0);
     }
 
     private void playPrev() {
@@ -716,7 +817,8 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         if (playbackPaused) {
             playbackPaused = false;
         }
-        controller.show(0);
+        controller.setVisibility(View.INVISIBLE);
+        //controller.show(0);
     }
 
     @Override
@@ -828,15 +930,20 @@ cPlaylistMode = true;
     ArrayList<File> song = new ArrayList<File>();
     ArrayList<String> songs = new ArrayList<String>();
 
-    LinearLayout layout = (LinearLayout)findViewById(R.id.ButtonLinearLayout);
-    layout.setVisibility(LinearLayout.VISIBLE);
+//    LinearLayout layout = (LinearLayout)findViewById(R.id.ButtonLinearLayout);
+//    layout.setVisibility(LinearLayout.VISIBLE);
+    ImageButton ib = (ImageButton)findViewById(R.id.addPL);
+    ib.setVisibility(View.INVISIBLE);
+
+    ImageButton ib2 = (ImageButton)findViewById(R.id.next);
+    ib2.setVisibility(View.VISIBLE);
+
+    ImageButton ib3 = (ImageButton)findViewById(R.id.cancel);
+    ib3.setVisibility(View.VISIBLE);
+
 //    EditText et = (EditText)findViewById(R.id.editText);
 //    et.setVisibility(EditText.VISIBLE);
-    if(controller!=null) {
-        controller.clearFocus();
-        controller.removeAllViews();
-        controller.setEnabled(false);
-    }
+
     song = findSongs(Environment.getExternalStorageDirectory());
     for(File f : song){
         songs.add(f.getName().replace(".mp3", ""));
@@ -847,10 +954,7 @@ cPlaylistMode = true;
             new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songs);
     listView = (ListView) findViewById(R.id.listView);
     listView.setAdapter(itemsAdapter);
-
-
-}
-
+    }
 }
 
 

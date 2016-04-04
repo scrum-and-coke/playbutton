@@ -16,6 +16,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.MenuItem;
 
 public class MusicService extends Service implements 
 MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -113,6 +114,10 @@ MediaPlayer.OnCompletionListener {
 
 	}
 
+	public String getSongTitle(){
+		return songTitle;
+	}
+
 	//set the song
 	public void setSong(int songIndex){
 		songPosn=songIndex;	
@@ -169,7 +174,8 @@ MediaPlayer.OnCompletionListener {
 		return player.getDuration();
 	}
 
-	public boolean isPng(){
+	public boolean isPng()
+	{
 		return player.isPlaying();
 	}
 

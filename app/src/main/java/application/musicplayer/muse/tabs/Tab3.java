@@ -36,60 +36,14 @@ public class Tab3 extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.tab_3,container,false);
-
-        v.setOnTouchListener(new OnSwipeTouchListener(v.getContext()) {
-
-            @Override
-            public void onClick() {
-                super.onClick();
-                Toast.makeText(v.getContext(), "Click", Toast.LENGTH_SHORT).show();
-                // your on click here
-            }
-
-            @Override
-            public void onDoubleClick() {
-                super.onDoubleClick();
-                // your on onDoubleClick here
-            }
-
-            @Override
-            public void onLongClick() {
-                super.onLongClick();
-                // your on onLongClick here
-            }
-
-            @Override
-            public void onSwipeUp() {
-                super.onSwipeUp();
-                Toast.makeText(v.getContext(), "Swipe Up", Toast.LENGTH_SHORT).show();
-                // your swipe up here
-            }
-
-            @Override
-            public void onSwipeDown() {
-                super.onSwipeDown();
-                // your swipe down here.
-            }
-
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeLeft();
-                // your swipe left here.
-            }
-
-            @Override
-            public void onSwipeRight() {
-                super.onSwipeRight();
-                // your swipe right here.
-            }
-        });
+        //MainActivity.loading_play = false;
         //retrieve list view
         MainActivity.songView = (ListView)v.findViewById(R.id.song_list);
         //instantiate list
         MainActivity.songList = new ArrayList<Song>();
         //get songs from device
         //contextOfApplication = Tab3.getContextOfApplication();
-        if(MainActivity.loading_play == false) {
+        if(MainActivity.loadPlaylist == false) {
             getSongList();
         }else{
             getSongList(MainActivity.songListTempHold);
@@ -97,7 +51,7 @@ public class Tab3 extends Fragment  {
             MainActivity.songListTemp = new ArrayList<Song>();
         }
 
-        MainActivity.loading_play = false;
+        MainActivity.loadPlaylist = false;
         //sort alphabetically by title
         Collections.sort(MainActivity.songList, new Comparator<Song>() {
             public int compare(Song a, Song b) {
