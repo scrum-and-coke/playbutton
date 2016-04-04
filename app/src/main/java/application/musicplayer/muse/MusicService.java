@@ -16,6 +16,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.MenuItem;
 
 public class MusicService extends Service implements 
 MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -35,6 +36,7 @@ MediaPlayer.OnCompletionListener {
 	private static final int NOTIFY_ID=1;
 	//shuffle flag and random
 	private boolean shuffle=false;
+	private boolean repeat=false;
 	private Random rand;
 
 	public void onCreate(){
@@ -112,6 +114,10 @@ MediaPlayer.OnCompletionListener {
 
 	}
 
+	public String getSongTitle(){
+		return songTitle;
+	}
+
 	//set the song
 	public void setSong(int songIndex){
 		songPosn=songIndex;	
@@ -168,7 +174,8 @@ MediaPlayer.OnCompletionListener {
 		return player.getDuration();
 	}
 
-	public boolean isPng(){
+	public boolean isPng()
+	{
 		return player.isPlaying();
 	}
 
@@ -199,6 +206,10 @@ MediaPlayer.OnCompletionListener {
 				newSong=rand.nextInt(songs.size());
 			}
 			songPosn=newSong;
+		}else if(repeat)
+		{
+			int newSong = songPosn;
+			songPosn = newSong;
 		}
 		else{
 			songPosn++;
@@ -217,6 +228,22 @@ MediaPlayer.OnCompletionListener {
 		if(shuffle) shuffle=false;
 		else shuffle=true;
 	}
+
+	public void setRepeat(){
+		if(repeat) repeat=false;
+		else repeat=true;
+	}
+
+	public void setPlay(){
+		if(isPng()) pausePlayer();
+		else{
+			setSong(getPosn());
+			playSong();
+		}
+	}
+
+	public boolean getRepeat() { return repeat; }
+
 	public boolean getShuffle(){
 		return shuffle;
 	}
