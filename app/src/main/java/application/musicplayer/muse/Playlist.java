@@ -7,9 +7,17 @@ import java.util.List;
  * Created by Ben on 4/4/2016.
  */
 public class Playlist {
+
+    public String name;
+
     public List<Song> songList;
 
     public Playlist() {
+        songList = new ArrayList<Song>();
+    }
+
+    public Playlist(String name){
+        this.name = name;
         songList = new ArrayList<Song>();
     }
 
