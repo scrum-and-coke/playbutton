@@ -620,7 +620,6 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
         musicSrv.playPrev();
     }
 
-
     @Override
     public boolean canPause() {
         return true;
