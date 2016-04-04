@@ -21,7 +21,7 @@ public class Clusterer {
         }
     }
 
-    private MusicLocation getCentroid(List<MusicLocation> locations) {
+    private MusicLocation mergeCluster(List<MusicLocation> locations) {
         double minLat = 999999999.9;
         double minLong = 999999999.9;
         double maxLat = 0;
@@ -86,7 +86,7 @@ public class Clusterer {
         _graph = new HashMap<Node, LinkedList<Node>>(dataset.size());
     }
 
-    List<List<MusicLocation>> DBSCAN(List<MusicLocation> dataset, float eps, int minPts) {
+    List<MusicLocation> DBSCAN(List<MusicLocation> dataset, float eps, int minPts) {
 
         for (int i = 0; i < dataset.size(); ++i) {
             for (int j = 0; j < i; ++j) {
@@ -114,7 +114,11 @@ public class Clusterer {
             }
         }
 
-        return clusters;
+        List<MusicLocation> merged = new LinkedList<MusicLocation>();
+        for (List<MusicLocation> cl : clusters) {
+            merged.add(mergeCluster(cl));
+        }
+        return merged;
     }
 
     void expandCluster(Node point, List<Node> neighbourhood, List<MusicLocation> cluster, int minPts) {
