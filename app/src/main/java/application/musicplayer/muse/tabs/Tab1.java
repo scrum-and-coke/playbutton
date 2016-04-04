@@ -1,6 +1,8 @@
 package application.musicplayer.muse.tabs;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,6 +31,8 @@ import android.content.ServiceConnection;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Button;
@@ -41,6 +45,7 @@ import android.widget.Toast;
 import application.musicplayer.muse.MainActivity;
 import application.musicplayer.muse.OnSwipeTouchListener;
 import application.musicplayer.muse.Playlist;
+import application.musicplayer.muse.PlaylistAdapter;
 import application.musicplayer.muse.R;
 import application.musicplayer.muse.Song;
 import application.musicplayer.muse.SongAdapter;
@@ -50,11 +55,102 @@ import application.musicplayer.muse.SongAdapter;
 
 
 public class Tab1 extends Fragment{
-    public static View v;
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.tab_1, container, false);
+    //if we dont use anywhere else get rid of static
+    public static ListView listView;
+    private Playlist tempPlaylist;
+    private Context context;
 
-        refreshView(v);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View v = inflater.inflate(R.layout.tab_1, container, false);
+        context = v.getContext();
+
+        ImageButton buttonClose = (ImageButton) v.findViewById(R.id.cancel);
+        buttonClose.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
+                    ib.setVisibility(View.VISIBLE);
+
+                    ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
+                    ib2.setVisibility(View.INVISIBLE);
+
+                    ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
+                    ib3.setVisibility(View.INVISIBLE);
+
+                    MainActivity.tab1CreatePlaylistMode = false;
+            }
+        });
+
+        ImageButton buttonAdd = (ImageButton) v.findViewById(R.id.next);
+        buttonAdd.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.tab1CreatePlaylistMode = true;
+
+                // components from main.xml
+                ImageButton button = (ImageButton) v.findViewById(R.id.next);
+
+                // add button listener
+                button.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View arg0) {
+
+                        // get prompts.xml view
+                        LayoutInflater li = LayoutInflater.from(v.getContext());
+                        View promptsView = li.inflate(R.layout.prompts, null);
+
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                                v.getContext());
+
+                        // set prompts.xml to alertdialog builder
+                        alertDialogBuilder.setView(promptsView);
+
+                        final EditText userInput = (EditText) promptsView
+                                .findViewById(R.id.editTextDialogUserInput);
+
+                        // set dialog message
+                        alertDialogBuilder
+                                .setCancelable(false)
+                                .setPositiveButton("OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                CreatePlaylist(tempPlaylist, v);
+
+                                                MainActivity.songList = tempPlaylist;
+
+                                                MainActivity.tab1CreatePlaylistMode = false;
+
+                                                ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
+                                                ib.setVisibility(View.VISIBLE);
+
+                                                ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
+                                                ib2.setVisibility(View.INVISIBLE);
+
+                                                ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
+                                                ib3.setVisibility(View.INVISIBLE);
+
+                                                MainActivity.pager.setCurrentItem(3);
+                                            }
+                                        })
+                                .setNegativeButton("Cancel",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+
+                        // create alert dialog
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+
+                        // show it
+                        alertDialog.show();
+
+                    }
+                });
+
+                CreatePlaylistMode(v);
+            }
+        });
 
         return v;
     }
@@ -62,151 +158,69 @@ public class Tab1 extends Fragment{
     public void refreshView(final View v)
     {
         BaseAdapter itemsAdapter;
-        if (MainActivity.tab1Mode){
+        if (!MainActivity.tab1CreatePlaylistMode ){
             itemsAdapter = new PlaylistAdapter(v.getContext(), MainActivity.playlists);
-            MainActivity.listView = (ListView) v.findViewById(R.id.listView);
-            MainActivity.listView.setAdapter(itemsAdapter);
-            MainActivity.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            listView = (ListView) v.findViewById(R.id.listView);
+            listView.setAdapter(itemsAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                      public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
-                                                         MainActivity.selectedPlaylist = (Playlist)MainActivity.listView.getItemAtPosition(position);
+                                                         MainActivity.songList = (Playlist)listView.getItemAtPosition(position);
                                                          MainActivity.pager.setCurrentItem(3);
                                                      }
                                                  }
             );
         } else {
-            itemsAdapter = new SongAdapter(v.getContext(), MainActivity.selectedPlaylist);
-            MainActivity.listView = (ListView) v.findViewById(R.id.listView);
-            MainActivity.listView.setAdapter(itemsAdapter);
-            MainActivity.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                             public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
-                                                                 Song song = (Song)MainActivity.listView.getItemAtPosition(position);
-
-
-                                                                 boolean s = true;
-                                                                 Playlist playlist = (Playlist) (MainActivity.listView.getItemAtPosition(position));
-                                                                 if (MainActivity.cPlaylistMode) {
-                                                                     for (int i = 0; i < MainActivity.checkedPlaylist.size(); i++) {
-                                                                         if (MainActivity.checkedPlaylist.contains(playListName + ".mp3")) {
-                                                                             MainActivity.listView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
-                                                                             MainActivity.checkedPlaylist.remove(i);
-                                                                             s = false;
-                                                                         }
-                                                                     }
-                                                                     if (s) {
-                                                                         MainActivity.checkedPlaylist.add(playListName + ".mp3");
-                                                                         MainActivity.listView.getChildAt(position).setBackgroundColor(Color.GRAY);
-                                                                     }
-                                                                 } else if (MainActivity.cPlaylistMode == false && MainActivity.loadPlaylist == false) {
-                                                                     MainActivity.loadPlaylist = true;
-                                                                     setPlayList(playListName);
-                                                                 } else {
-                                                                     setPlayList(playListName);
-                                                                 }
-                                                             }
-                                                         }
-            );
+            itemsAdapter = new SongAdapter(v.getContext(), MainActivity.defaultSongList);
+            listView = (ListView) v.findViewById(R.id.listView);
+            listView.setAdapter(itemsAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                 public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
+                     Song song = (Song)listView.getItemAtPosition(position);
+                     boolean s = true;
+                     //CHECK THIS OUT L8R
+                     for (int i = 0; i < tempPlaylist.songList.size(); i++) {
+                         if (tempPlaylist.songList.contains(song)) {
+                             listView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
+                             tempPlaylist.songList.remove(i);
+                             s = false;
+                         }
+                     }
+                     if (s) {
+                         tempPlaylist.songList.add(song);
+                         listView.getChildAt(position).setBackgroundColor(Color.GRAY);
+                     }
+                 }
+             });
         }
-        ArrayAdapter<ArrayList<Song>> itemsAdapter =
-                new ArrayAdapter<ArrayList<Song>>(v.getContext(), android.R.layout.simple_list_item_1, MainActivity.playlists);
-        MainActivity.listView = (ListView) v.findViewById(R.id.listView);
-        MainActivity.listView.setAdapter(itemsAdapter);
-        MainActivity.listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View clickView,
-                                    int position, long id) {
-
-                Song song = (Song) (MainActivity.listView.getItemAtPosition(position));
-                if (MainActivity.cPlaylistMode == true) {
-
-                    MainActivity.checkedPlaylist.add(song);
-
-                } else if (MainActivity.cPlaylistMode == false && MainActivity.loading_play == false){
-                    File f = new File("/data/data/application.musicplayer.muse/files/" + song + ".txt");
-
-                    LoadPlaylist(v, f, song);
-                } else {
-
-                    try{
-                    InputStream in = v.getContext().openFileInput(song + ".txt");
-
-                    if (in != null) {
-
-                        InputStreamReader tmp = new InputStreamReader(in);
-                        BufferedReader reader = new BufferedReader(tmp);
-                        String str;
-                        StringBuilder buf = new StringBuilder();
-                        MediaMetadataRetriever metaRetriver;
-                        metaRetriver = new MediaMetadataRetriever();
-                        while ((str = reader.readLine()) != null) {
-
-
-
-                            File test = null;
-                            for (File f : MainActivity.song){
-                                String x = f.getName();
-                                if (f.getName().equals(str)){
-                                    test = new File(f.getAbsolutePath());
-                                    break;
-                                }
-                            }
-
-                            MainActivity.songListTempHold.add(test);
-
-                        }
-
-                    }
-                        in.close();
-
-                        }catch(Exception ex){
-                            System.out.print(ex.getMessage());
-
-                        }
-
-
-                    }
-
-
-                }
-
-
-        });
-
-
-
-
-
-        return v;
     }
 
-    public static void setPlayList(String playListName) {
+    public void CreatePlaylistMode(View v){
+
+        ImageButton ib = (ImageButton)v.findViewById(R.id.addPL);
+        ib.setVisibility(View.INVISIBLE);
+
+        ImageButton ib2 = (ImageButton)v.findViewById(R.id.next);
+        ib2.setVisibility(View.VISIBLE);
+
+        ImageButton ib3 = (ImageButton)v.findViewById(R.id.cancel);
+        ib3.setVisibility(View.VISIBLE);
+    }
+
+    public void CreatePlaylist(Playlist pl, View v) {
         try {
-            InputStream in = v.getContext().openFileInput(playListName + ".txt");
-            if (in != null) {
-                InputStreamReader tmp = new InputStreamReader(in);
-                BufferedReader reader = new BufferedReader(tmp);
-                String str;
-                StringBuilder buf = new StringBuilder();
-                MediaMetadataRetriever metaRetriver;
-                metaRetriver = new MediaMetadataRetriever();
-                while ((str = reader.readLine()) != null) {
-
-
-                    File test = null;
-                    for (File f : MainActivity.song) {
-                        String x = f.getName();
-                        if (f.getName().equals(str)) {
-                            test = new File(f.getAbsolutePath());
-                            break;
-                        }
-                    }
-                    MainActivity.songListTempHold.add(test);
+            String STORETEXT = pl.name + ".txt";
+            OutputStreamWriter out = new OutputStreamWriter(v.getContext().openFileOutput(STORETEXT, 0));
+            for (String x : pl.songList) {
+                try {
+                    out.write(x);
+                    out.write('\n');
+                } catch (Exception e) {
                 }
-
             }
-            in.close();
-            MainActivity.pager.setCurrentItem(3);
+            out.close();
         } catch (Exception ex) {
             System.out.print(ex.getMessage());
         }
     }
-
 }
+
