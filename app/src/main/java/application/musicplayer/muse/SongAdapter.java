@@ -1,6 +1,7 @@
 package application.musicplayer.muse;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,12 +21,12 @@ import android.widget.TextView;
 public class SongAdapter extends BaseAdapter {
 	
 	//song list and layout
-	private ArrayList<Song> songs;
+	private List<Song> songs;
 	private LayoutInflater songInf;
 	LinearLayout songLay;
 	//constructor
-	public SongAdapter(Context c, ArrayList<Song> theSongs){
-		songs=theSongs;
+	public SongAdapter(Context c, Playlist theSongs){
+		songs=theSongs.songList;
 		songInf=LayoutInflater.from(c);
 	}
 

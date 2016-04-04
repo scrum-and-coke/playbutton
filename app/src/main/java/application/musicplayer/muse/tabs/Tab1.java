@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Button;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 
 import application.musicplayer.muse.MainActivity;
 import application.musicplayer.muse.OnSwipeTouchListener;
+import application.musicplayer.muse.Playlist;
 import application.musicplayer.muse.R;
 import application.musicplayer.muse.Song;
 import application.musicplayer.muse.SongAdapter;
@@ -55,40 +57,124 @@ public class Tab1 extends Fragment{
         refreshView(v);
 
         return v;
-        }
+    }
 
     public void refreshView(final View v)
     {
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<String>(v.getContext(), android.R.layout.simple_list_item_1, MainActivity.playList1);
+        BaseAdapter itemsAdapter;
+        if (MainActivity.tab1Mode){
+            itemsAdapter = new PlaylistAdapter(v.getContext(), MainActivity.playlists);
+            MainActivity.listView = (ListView) v.findViewById(R.id.listView);
+            MainActivity.listView.setAdapter(itemsAdapter);
+            MainActivity.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                     public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
+                                                         MainActivity.selectedPlaylist = (Playlist)MainActivity.listView.getItemAtPosition(position);
+                                                         MainActivity.pager.setCurrentItem(3);
+                                                     }
+                                                 }
+            );
+        } else {
+            itemsAdapter = new SongAdapter(v.getContext(), MainActivity.selectedPlaylist);
+            MainActivity.listView = (ListView) v.findViewById(R.id.listView);
+            MainActivity.listView.setAdapter(itemsAdapter);
+            MainActivity.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                             public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
+                                                                 Song song = (Song)MainActivity.listView.getItemAtPosition(position);
+
+
+                                                                 boolean s = true;
+                                                                 Playlist playlist = (Playlist) (MainActivity.listView.getItemAtPosition(position));
+                                                                 if (MainActivity.cPlaylistMode) {
+                                                                     for (int i = 0; i < MainActivity.checkedPlaylist.size(); i++) {
+                                                                         if (MainActivity.checkedPlaylist.contains(playListName + ".mp3")) {
+                                                                             MainActivity.listView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
+                                                                             MainActivity.checkedPlaylist.remove(i);
+                                                                             s = false;
+                                                                         }
+                                                                     }
+                                                                     if (s) {
+                                                                         MainActivity.checkedPlaylist.add(playListName + ".mp3");
+                                                                         MainActivity.listView.getChildAt(position).setBackgroundColor(Color.GRAY);
+                                                                     }
+                                                                 } else if (MainActivity.cPlaylistMode == false && MainActivity.loadPlaylist == false) {
+                                                                     MainActivity.loadPlaylist = true;
+                                                                     setPlayList(playListName);
+                                                                 } else {
+                                                                     setPlayList(playListName);
+                                                                 }
+                                                             }
+                                                         }
+            );
+        }
+        ArrayAdapter<ArrayList<Song>> itemsAdapter =
+                new ArrayAdapter<ArrayList<Song>>(v.getContext(), android.R.layout.simple_list_item_1, MainActivity.playlists);
         MainActivity.listView = (ListView) v.findViewById(R.id.listView);
         MainActivity.listView.setAdapter(itemsAdapter);
         MainActivity.listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
-                                                         public void onItemClick(AdapterView<?> parent, View clickView,
-                                                                                 int position, long id) {
-                                                             boolean s = true;
-                                                             String playListName = (String) (MainActivity.listView.getItemAtPosition(position));
-                                                             if (MainActivity.cPlaylistMode == true) {
-                                                                 for (int i = 0; i < MainActivity.checkedPlaylist.size(); i++) {
-                                                                     if (MainActivity.checkedPlaylist.contains(playListName + ".mp3")) {
-                                                                         MainActivity.listView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
-                                                                         MainActivity.checkedPlaylist.remove(i);
-                                                                         s = false;
-                                                                     }
-                                                                 }
-                                                                 if (s) {
-                                                                     MainActivity.checkedPlaylist.add(playListName + ".mp3");
-                                                                     MainActivity.listView.getChildAt(position).setBackgroundColor(Color.GRAY);
-                                                                 }
-                                                             } else if (MainActivity.cPlaylistMode == false && MainActivity.loadPlaylist == false) {
-                                                                 MainActivity.loadPlaylist = true;
-                                                                 setPlayList(playListName);
-                                                             } else {
-                                                                 setPlayList(playListName);
-                                                             }
-                                                         }
-                                                     }
-        );
+            public void onItemClick(AdapterView<?> parent, View clickView,
+                                    int position, long id) {
+
+                Song song = (Song) (MainActivity.listView.getItemAtPosition(position));
+                if (MainActivity.cPlaylistMode == true) {
+
+                    MainActivity.checkedPlaylist.add(song);
+
+                } else if (MainActivity.cPlaylistMode == false && MainActivity.loading_play == false){
+                    File f = new File("/data/data/application.musicplayer.muse/files/" + song + ".txt");
+
+                    LoadPlaylist(v, f, song);
+                } else {
+
+                    try{
+                    InputStream in = v.getContext().openFileInput(song + ".txt");
+
+                    if (in != null) {
+
+                        InputStreamReader tmp = new InputStreamReader(in);
+                        BufferedReader reader = new BufferedReader(tmp);
+                        String str;
+                        StringBuilder buf = new StringBuilder();
+                        MediaMetadataRetriever metaRetriver;
+                        metaRetriver = new MediaMetadataRetriever();
+                        while ((str = reader.readLine()) != null) {
+
+
+
+                            File test = null;
+                            for (File f : MainActivity.song){
+                                String x = f.getName();
+                                if (f.getName().equals(str)){
+                                    test = new File(f.getAbsolutePath());
+                                    break;
+                                }
+                            }
+
+                            MainActivity.songListTempHold.add(test);
+
+                        }
+
+                    }
+                        in.close();
+
+                        }catch(Exception ex){
+                            System.out.print(ex.getMessage());
+
+                        }
+
+
+                    }
+
+
+                }
+
+
+        });
+
+
+
+
+
+        return v;
     }
 
     public static void setPlayList(String playListName) {

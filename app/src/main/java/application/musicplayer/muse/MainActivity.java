@@ -93,15 +93,18 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     //CharSequence Titles[]={"PlayLists","MusE","SongList"};
     CharSequence Titles[] = {"PlayLists", "MusE", "SongList"};
     int Numboftabs = 3;
-    public boolean songPlaying = false;
-    //music player
-    public static ArrayList<Song> songList;
     public static ArrayList<Song> songListTemp = new ArrayList<Song>();
     public static ListView songView;
     //service
-    public static ArrayList<String> playList1 = new ArrayList<String>();
+    //music player
+
+
+    public static boolean tab1Mode = true;
+    public static ArrayList<Playlist> playlists = new ArrayList<Playlist>();
+    public static Playlist songlist = new Playlist();
+
+
     public static ArrayList<File> playListFileDir = new ArrayList<File>();
-    public static ArrayList<String> mySongsName = new ArrayList<String>();
     private MusicService musicSrv;
     public static ArrayList<File> song = new ArrayList<File>();
     private Intent playIntent;
@@ -110,10 +113,8 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     //controller
     public static MusicController controller;
     private View cSelected;
-    private EditText result;
     final Context context = this;
     private ImageButton button;
-    private String plName;
     private int counterC = 0;
     private String tColor = "original";
     //activity and playback pause flags
@@ -130,7 +131,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
      */
     private GoogleApiClient client;
     public static Boolean cPlaylistMode = false;
-    public static ArrayList<String> checkedPlaylist = new ArrayList<String>();
+    public static ArrayList<Song> checkedPlaylist = new ArrayList<Song>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +139,7 @@ public static ArrayList<File> songListTempHold = new ArrayList<File>();
         setContentView(R.layout.activity_main);
         init_slider();
         init_navigator();
+        songlist =
 
         File f = new File("/data/data/application.musicplayer.muse/files");
         playListFileDir = findPlaylist(f);
