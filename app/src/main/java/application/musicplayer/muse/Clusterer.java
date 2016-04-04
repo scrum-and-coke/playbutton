@@ -12,13 +12,60 @@ import java.util.List;
  */
 public class Clusterer {
 
-    public static class MusicLocation{
-        Location loc;
-        ArrayList<String> genres;
-        MusicLocation(Location l, ArrayList<String> g){
+    public static class MusicLocation {
+        public Location loc;
+        public Playlist playlist;
+        MusicLocation(Location l, Playlist pl){
             loc = l;
-            genres = g;
+            playlist = pl;
         }
+    }
+
+    private MusicLocation getCentroid(List<MusicLocation> locations) {
+        double minLat = 999999999.9;
+        double minLong = 999999999.9;
+        double maxLat = 0;
+        double maxLong = 0;
+        Playlist p = new Playlist();
+        for (MusicLocation ml : locations) {
+            if (ml.loc.getLatitude() < minLat) {
+                minLat = ml.loc.getLatitude();
+            }
+            if (ml.loc.getLatitude() > maxLat) {
+                maxLat = ml.loc.getLatitude();
+            }
+            if (ml.loc.getLongitude() < minLong) {
+                minLong = ml.loc.getLongitude();
+            }
+            if (ml.loc.getLongitude() > maxLong) {
+                maxLong = ml.loc.getLongitude();
+            }
+
+            p.merge(ml.playlist);
+        }
+
+        return new MusicLocation(midPoint(minLat, minLong, maxLat, maxLong), p);
+    }
+
+    private static Location midPoint(double lat1,double lon1,double lat2,double lon2){
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        //convert to radians
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        lon1 = Math.toRadians(lon1);
+
+        double Bx = Math.cos(lat2) * Math.cos(dLon);
+        double By = Math.cos(lat2) * Math.sin(dLon);
+        double lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
+        double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
+
+        //reconvert to degrees
+        Location l = new Location("");
+        l.setLatitude(Math.toDegrees(lat3));
+        l.setLongitude(Math.toDegrees(lon3));
+        return l;
     }
 
     private static class Node {
@@ -34,7 +81,6 @@ public class Clusterer {
     }
 
     private HashMap<Node, LinkedList<Node>> _graph;
-    private int _minPts;
 
     public Clusterer(List<MusicLocation> dataset) {
         _graph = new HashMap<Node, LinkedList<Node>>(dataset.size());
