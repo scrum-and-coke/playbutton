@@ -3,7 +3,6 @@ package application.musicplayer.muse.tabs;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
@@ -11,11 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import android.content.Context;
@@ -34,8 +30,6 @@ import application.musicplayer.muse.PlaylistAdapter;
 import application.musicplayer.muse.R;
 import application.musicplayer.muse.Song;
 import application.musicplayer.muse.SongAdapter;
-
-
 
 
 
