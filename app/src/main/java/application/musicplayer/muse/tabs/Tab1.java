@@ -68,77 +68,79 @@ public class Tab1 extends Fragment{
             public void onClick(View view) {
                 MainActivity.tab1CreatePlaylistMode = true;
                 refreshView(v);
-                ImageButton buttonNext = (ImageButton) v.findViewById(R.id.next);
+
                 CreatePlaylistMode(v);
-                buttonNext.setOnClickListener(new OnClickListener() {
+                tempPlaylist = new Playlist();
+
+            }
+        });
+
+        ImageButton buttonNext = (ImageButton) v.findViewById(R.id.next);
+        buttonNext.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view2) {
+
+                // components from main.xml
+                ImageButton button = (ImageButton) v.findViewById(R.id.next);
+
+                // add button listener
+                button.setOnClickListener(new OnClickListener() {
                     @Override
-                    public void onClick(View view2) {
+                    public void onClick(View arg0) {
 
-                        // components from main.xml
-                        ImageButton button = (ImageButton) v.findViewById(R.id.next);
+                        // get prompts.xml view
+                        LayoutInflater li = LayoutInflater.from(v.getContext());
+                        View promptsView = li.inflate(R.layout.prompts, null);
 
-                        // add button listener
-                        button.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View arg0) {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                                v.getContext());
 
-                                // get prompts.xml view
-                                LayoutInflater li = LayoutInflater.from(v.getContext());
-                                View promptsView = li.inflate(R.layout.prompts, null);
+                        // set prompts.xml to alertdialog builder
+                        alertDialogBuilder.setView(promptsView);
 
-                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                        v.getContext());
+                        final EditText userInput = (EditText) promptsView
+                                .findViewById(R.id.editTextDialogUserInput);
 
-                                // set prompts.xml to alertdialog builder
-                                alertDialogBuilder.setView(promptsView);
+                        // set dialog message
+                        alertDialogBuilder
+                                .setCancelable(false)
+                                .setPositiveButton("OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                tempPlaylist.name = userInput.getText().toString();
 
-                                final EditText userInput = (EditText) promptsView
-                                        .findViewById(R.id.editTextDialogUserInput);
+                                                savePlaylist(tempPlaylist);
+                                                MainActivity.playlists.add(tempPlaylist);
 
-                                // set dialog message
-                                alertDialogBuilder
-                                        .setCancelable(false)
-                                        .setPositiveButton("OK",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int id) {
-                                                        tempPlaylist.name = userInput.getText().toString();
+                                                MainActivity.songList = tempPlaylist;
 
-                                                        savePlaylist(tempPlaylist);
-                                                        MainActivity.playlists.add(tempPlaylist);
+                                                MainActivity.tab1CreatePlaylistMode = false;
 
-                                                        MainActivity.songList = tempPlaylist;
+                                                ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
+                                                ib.setVisibility(View.VISIBLE);
 
-                                                        MainActivity.playlists.add(tempPlaylist);
+                                                ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
+                                                ib2.setVisibility(View.INVISIBLE);
 
-                                                        MainActivity.tab1CreatePlaylistMode = false;
+                                                ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
+                                                ib3.setVisibility(View.INVISIBLE);
 
-                                                        ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
-                                                        ib.setVisibility(View.VISIBLE);
+                                                MainActivity.pager.setCurrentItem(3);
+                                            }
+                                        })
+                                .setNegativeButton("Cancel",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
 
-                                                        ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
-                                                        ib2.setVisibility(View.INVISIBLE);
+                        // create alert dialog
+                        AlertDialog alertDialog = alertDialogBuilder.create();
 
-                                                        ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
-                                                        ib3.setVisibility(View.INVISIBLE);
+                        // show it
+                        alertDialog.show();
 
-                                                        MainActivity.pager.setCurrentItem(3);
-                                                    }
-                                                })
-                                        .setNegativeButton("Cancel",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int id) {
-                                                        dialog.cancel();
-                                                    }
-                                                });
-
-                                // create alert dialog
-                                AlertDialog alertDialog = alertDialogBuilder.create();
-
-                                // show it
-                                alertDialog.show();
-
-                            }
-                        });
                     }
                 });
             }
@@ -168,10 +170,9 @@ public class Tab1 extends Fragment{
                  public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
                      Song song = (Song)listView.getAdapter().getItem(position);
                      boolean s = true;
-                     tempPlaylist = new Playlist();
                      //CHECK THIS OUT L8R
                      for (int i = 0; i < tempPlaylist.songList.size(); i++) {
-                         if (tempPlaylist.songList.contains(song)) {
+                         if (tempPlaylist.songList.get(i).equals(song)) {
                              listView.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
                              tempPlaylist.songList.remove(i);
                              s = false;
