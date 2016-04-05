@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created by Ben on 4/3/2016.
@@ -84,15 +85,19 @@ public class Clusterer {
 
     public Clusterer(List<MusicLocation> dataset, double eps) {
         _graph = new HashMap<Node, LinkedList<Node>>(dataset.size());
+        List<Node> nodeset = new LinkedList<Node>();
+        for (MusicLocation ml : dataset)
+            nodeset.add(new Node(ml));
 
-        for (int i = 0; i < dataset.size(); ++i) {
+        for (int i = 0; i < nodeset.size(); ++i) {
+            Node iNode = nodeset.get(i);
             for (int j = 0; j < i; ++j) {
-                if (dataset.get(i).loc.distanceTo(dataset.get(j).loc) > eps) {
-                    Node iNode = new Node(dataset.get(i));
-                    Node jNode = new Node(dataset.get(j));
-                    _graph.put(iNode, new LinkedList<Node>());
+                Node jNode = nodeset.get(j);
+                double dist = iNode.val.loc.distanceTo(jNode.val.loc);
+                if (dist < eps * 1000) {
+                    if (_graph.get(iNode) == null) _graph.put(iNode, new LinkedList<Node>());
                     _graph.get(iNode).add(jNode);
-                    _graph.put(jNode, new LinkedList<Node>());
+                    if (_graph.get(jNode) == null) _graph.put(jNode, new LinkedList<Node>());
                     _graph.get(jNode).add(iNode);
                 }
             }
@@ -124,11 +129,14 @@ public class Clusterer {
     void expandCluster(Node point, List<Node> neighbourhood, List<MusicLocation> cluster, int minPts) {
         cluster.add(point.val);
         point.clustered = true;
-        for (Node n : neighbourhood) {
+        ListIterator<Node> iter = neighbourhood.listIterator();
+        while (iter.hasNext()) {
+            Node n = iter.next();
             if (!n.visited) {
                 n.visited = true;
                 List<Node> nextNeighbourhood = _graph.get(n);
-                if (nextNeighbourhood.size() >= minPts) neighbourhood.addAll(nextNeighbourhood);
+                if (nextNeighbourhood.size() >= minPts)
+                    for (Node nextN : nextNeighbourhood) iter.add(nextN);
             }
             if (!n.clustered) {
                 cluster.add(n.val);
