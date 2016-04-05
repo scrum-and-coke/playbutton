@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
@@ -36,6 +37,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.List;
+
 import android.os.IBinder;
 import android.content.ComponentName;
 import android.content.Context;
@@ -98,6 +101,54 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
         init_slider();
         init_navigator();
 
+
+
+        Location loc1 = new Location("");
+        loc1.setLatitude(43.01340);
+        loc1.setLongitude(-81.200708);
+
+        Location loc2 = new Location("");
+        loc2.setLatitude(43.01342);
+        loc2.setLongitude(-81.200706);
+
+        Location loc3 = new Location("");
+        loc3.setLatitude(43.01338);
+        loc3.setLongitude(-81.200708);
+
+
+        Location loc4 = new Location("");
+        loc4.setLatitude(40.10101);
+        loc4.setLongitude(-80.0000);
+
+        Location loc5 = new Location("");
+        loc5.setLatitude(40.10104);
+        loc5.setLongitude(-80.0002);
+
+        Location loc6 = new Location("");
+        loc6.setLatitude(40.10110);
+        loc6.setLongitude(-80.0005);
+
+        Playlist pl1 = new Playlist("Gym");
+        Playlist pl2 = new Playlist("Study");
+
+        Clusterer.MusicLocation ml1 = new Clusterer.MusicLocation(loc1, pl1);
+        Clusterer.MusicLocation ml2 = new Clusterer.MusicLocation(loc2, pl1);
+        Clusterer.MusicLocation ml3 = new Clusterer.MusicLocation(loc3, pl1);
+        Clusterer.MusicLocation ml4 = new Clusterer.MusicLocation(loc4, pl2);
+        Clusterer.MusicLocation ml5 = new Clusterer.MusicLocation(loc5, pl2);
+        Clusterer.MusicLocation ml6 = new Clusterer.MusicLocation(loc6, pl2);
+
+        List<Clusterer.MusicLocation> musicLocationList = new ArrayList<Clusterer.MusicLocation>();
+        musicLocationList.add(ml1);
+        musicLocationList.add(ml2);
+        musicLocationList.add(ml3);
+        musicLocationList.add(ml4);
+        musicLocationList.add(ml5);
+        musicLocationList.add(ml6);
+
+        Clusterer clusterer = new Clusterer(musicLocationList, 1.0);
+
+        List<Clusterer.MusicLocation> output = clusterer.DBSCAN(2);
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
