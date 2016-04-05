@@ -30,7 +30,7 @@ public class PlaylistAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return playlists.get(position);
     }
 
     @Override

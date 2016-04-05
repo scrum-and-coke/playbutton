@@ -22,7 +22,7 @@ public class SongAdapter extends BaseAdapter {
 	//song list and layout
 	private List<Song> songs;
 	private LayoutInflater songInf;
-	LinearLayout songLay;
+
 	//constructor
 	public SongAdapter(Context c, Playlist theSongs){
 		songs=theSongs.songList;
@@ -35,8 +35,8 @@ public class SongAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int arg0) {
-		return null;
+	public Object getItem(int position) {
+		return songs.get(position);
 	}
 
 	@Override

@@ -93,10 +93,11 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init_slider();
-        init_navigator();
         getSongList();
         loadPlaylists();
+        init_slider();
+        init_navigator();
+
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -110,7 +111,8 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
         ObjectInputStream ois;
         try {
             for (File f : appDir.listFiles()) {
-                fis = context.openFileInput(f.getPath());
+                //f.delete();
+                fis = new FileInputStream(f);
                 ois = new ObjectInputStream(fis);
                 Playlist pl = (Playlist)ois.readObject();
                 playlists.add(pl);
@@ -153,6 +155,7 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
             }
             while (musicCursor.moveToNext());
         }
+        defaultSongList.songList = songList.songList;
     }
 
     //Broadcast receiver to determine when music player has been prepared

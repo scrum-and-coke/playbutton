@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -24,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.graphics.Color;
 
 
+import application.musicplayer.muse.AddSongAdapter;
 import application.musicplayer.muse.MainActivity;
 import application.musicplayer.muse.Playlist;
 import application.musicplayer.muse.PlaylistAdapter;
@@ -48,90 +50,97 @@ public class Tab1 extends Fragment{
         buttonClose.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                    ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
-                    ib.setVisibility(View.VISIBLE);
+                ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
+                ib.setVisibility(View.VISIBLE);
 
-                    ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
-                    ib2.setVisibility(View.INVISIBLE);
+                ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
+                ib2.setVisibility(View.INVISIBLE);
 
-                    ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
-                    ib3.setVisibility(View.INVISIBLE);
+                ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
+                ib3.setVisibility(View.INVISIBLE);
 
-                    MainActivity.tab1CreatePlaylistMode = false;
+                MainActivity.tab1CreatePlaylistMode = false;
             }
         });
-
-        ImageButton buttonAdd = (ImageButton) v.findViewById(R.id.next);
+        ImageButton buttonAdd = (ImageButton) v.findViewById(R.id.addPL);
         buttonAdd.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 MainActivity.tab1CreatePlaylistMode = true;
-
-                // components from main.xml
-                ImageButton button = (ImageButton) v.findViewById(R.id.next);
-
-                // add button listener
-                button.setOnClickListener(new OnClickListener() {
+                refreshView(v);
+                ImageButton buttonNext = (ImageButton) v.findViewById(R.id.next);
+                CreatePlaylistMode(v);
+                buttonNext.setOnClickListener(new OnClickListener() {
                     @Override
-                    public void onClick(View arg0) {
+                    public void onClick(View view2) {
 
-                        // get prompts.xml view
-                        LayoutInflater li = LayoutInflater.from(v.getContext());
-                        View promptsView = li.inflate(R.layout.prompts, null);
+                        // components from main.xml
+                        ImageButton button = (ImageButton) v.findViewById(R.id.next);
 
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                v.getContext());
+                        // add button listener
+                        button.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View arg0) {
 
-                        // set prompts.xml to alertdialog builder
-                        alertDialogBuilder.setView(promptsView);
+                                // get prompts.xml view
+                                LayoutInflater li = LayoutInflater.from(v.getContext());
+                                View promptsView = li.inflate(R.layout.prompts, null);
 
-                        final EditText userInput = (EditText) promptsView
-                                .findViewById(R.id.editTextDialogUserInput);
+                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                                        v.getContext());
 
-                        // set dialog message
-                        alertDialogBuilder
-                                .setCancelable(false)
-                                .setPositiveButton("OK",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                savePlaylist(tempPlaylist);
-                                                MainActivity.playlists.add(tempPlaylist);
+                                // set prompts.xml to alertdialog builder
+                                alertDialogBuilder.setView(promptsView);
 
-                                                MainActivity.songList = tempPlaylist;
+                                final EditText userInput = (EditText) promptsView
+                                        .findViewById(R.id.editTextDialogUserInput);
 
-                                                MainActivity.playlists.add(tempPlaylist);
+                                // set dialog message
+                                alertDialogBuilder
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        tempPlaylist.name = userInput.getText().toString();
 
-                                                MainActivity.tab1CreatePlaylistMode = false;
+                                                        savePlaylist(tempPlaylist);
+                                                        MainActivity.playlists.add(tempPlaylist);
 
-                                                ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
-                                                ib.setVisibility(View.VISIBLE);
+                                                        MainActivity.songList = tempPlaylist;
 
-                                                ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
-                                                ib2.setVisibility(View.INVISIBLE);
+                                                        MainActivity.playlists.add(tempPlaylist);
 
-                                                ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
-                                                ib3.setVisibility(View.INVISIBLE);
+                                                        MainActivity.tab1CreatePlaylistMode = false;
 
-                                                MainActivity.pager.setCurrentItem(3);
-                                            }
-                                        })
-                                .setNegativeButton("Cancel",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                                        ImageButton ib = (ImageButton) v.findViewById(R.id.addPL);
+                                                        ib.setVisibility(View.VISIBLE);
 
-                        // create alert dialog
-                        AlertDialog alertDialog = alertDialogBuilder.create();
+                                                        ImageButton ib2 = (ImageButton) v.findViewById(R.id.next);
+                                                        ib2.setVisibility(View.INVISIBLE);
 
-                        // show it
-                        alertDialog.show();
+                                                        ImageButton ib3 = (ImageButton) v.findViewById(R.id.cancel);
+                                                        ib3.setVisibility(View.INVISIBLE);
 
+                                                        MainActivity.pager.setCurrentItem(3);
+                                                    }
+                                                })
+                                        .setNegativeButton("Cancel",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        dialog.cancel();
+                                                    }
+                                                });
+
+                                // create alert dialog
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                                // show it
+                                alertDialog.show();
+
+                            }
+                        });
                     }
                 });
-
-                CreatePlaylistMode(v);
             }
         });
 
@@ -140,26 +149,26 @@ public class Tab1 extends Fragment{
 
     public void refreshView(final View v)
     {
-        BaseAdapter itemsAdapter;
         if (!MainActivity.tab1CreatePlaylistMode ){
-            itemsAdapter = new PlaylistAdapter(v.getContext(), MainActivity.playlists);
-            listView = (ListView) v.findViewById(R.id.listView);
+            PlaylistAdapter itemsAdapter = new PlaylistAdapter(v.getContext(), MainActivity.playlists);
+            listView = (ListView)v.findViewById(R.id.listView);
             listView.setAdapter(itemsAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                      public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
-                                                         MainActivity.songList = (Playlist)listView.getItemAtPosition(position);
-                                                         MainActivity.pager.setCurrentItem(3);
+                                                         MainActivity.songList = (Playlist)listView.getAdapter().getItem(position);
+                                                         MainActivity.pager.setCurrentItem(2);
                                                      }
                                                  }
             );
-        } else {
-            itemsAdapter = new SongAdapter(v.getContext(), MainActivity.defaultSongList);
-            listView = (ListView) v.findViewById(R.id.listView);
+        } else if(MainActivity.tab1CreatePlaylistMode){
+            AddSongAdapter itemsAdapter = new AddSongAdapter(v.getContext(), MainActivity.defaultSongList);
+            listView = (ListView)v.findViewById(R.id.listView);
             listView.setAdapter(itemsAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                  public void onItemClick(AdapterView<?> parent, View clickView, int position, long id) {
-                     Song song = (Song)listView.getItemAtPosition(position);
+                     Song song = (Song)listView.getAdapter().getItem(position);
                      boolean s = true;
+                     tempPlaylist = new Playlist();
                      //CHECK THIS OUT L8R
                      for (int i = 0; i < tempPlaylist.songList.size(); i++) {
                          if (tempPlaylist.songList.contains(song)) {
@@ -194,7 +203,8 @@ public class Tab1 extends Fragment{
 
         try
         {
-            FileOutputStream fos = context.openFileOutput( "/data/data/application.musicplayer.muse/files/" + pl.name + ".txt", Context.MODE_PRIVATE);
+            File f = new File("/data/data/application.musicplayer.muse/files/" + pl.name + ".txt");
+            FileOutputStream fos = new FileOutputStream(f);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(pl);
             os.close();
