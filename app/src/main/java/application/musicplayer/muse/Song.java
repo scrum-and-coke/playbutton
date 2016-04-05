@@ -12,15 +12,13 @@ public class Song implements Serializable {
 	private String artist;
 	
 	public Song(Uri uri, String songTitle, String songArtist){
-		this.uri=uri.getPath();
+		this.uri=uri.toString();
 		title=songTitle;
 		artist=songArtist;
 	}
 	
 	public Uri getUri(){
-		Uri.Builder b = new Uri.Builder();
-		b.path(uri);
-		return b.build();
+		return Uri.parse(uri);
 	}
 	public String getTitle(){return title;}
 	public String getArtist(){return artist;}

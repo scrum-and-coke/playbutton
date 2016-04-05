@@ -111,7 +111,7 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
         ObjectInputStream ois;
         try {
             for (File f : appDir.listFiles()) {
-                //f.delete();
+//                f.delete();
                 fis = new FileInputStream(f);
                 ois = new ObjectInputStream(fis);
                 Playlist pl = (Playlist)ois.readObject();
