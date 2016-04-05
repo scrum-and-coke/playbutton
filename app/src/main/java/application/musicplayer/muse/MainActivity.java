@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
@@ -54,6 +55,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 public class MainActivity extends ActionBarActivity implements MediaPlayerControl {
 
+    private ArrayList<Location> locations;
+    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+    //service
+    //activity and playback pause flags
     // Declaring Your View and Variables
     Toolbar toolbar;
     public static ViewPager pager;
@@ -62,30 +67,28 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     CharSequence Titles[] = {"PlayLists", "MusE", "SongList"};
     int Numboftabs = 3;
     public static ListView songView;
-    //service
+
+
     //music player
-
-
     public static boolean tab1CreatePlaylistMode = false;
     public static ArrayList<Playlist> playlists = new ArrayList<Playlist>();
     public static Playlist songList = new Playlist();
-    public static Playlist defaultSongList = new Playlist();
 
+    public static Playlist defaultSongList = new Playlist();
     private MusicService musicSrv;
     private Intent playIntent;
     //binding
     private boolean musicBound = false;
     //controller
     public static MusicController controller;
-    private View cSelected;
 
+    private View cSelected;
     private int counterC = 0;
     private String tColor = "original";
-    //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
+
+
     private boolean show = false;
-
-
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -575,6 +578,8 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
                 }
                 pause();
             } else if (!musicSrv.isPng() && counterC > 0) {
+                locations.add(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+
                 switch (tColor) {
                     case "original":
                         ((ImageButton) findViewById(R.id.play_pause)).setBackgroundResource(R.drawable.mainpagepause);
