@@ -25,9 +25,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
      * {@link #setCustomTabColorizer(TabColorizer)}.
      */
     public interface TabColorizer {
-
         int getIndicatorColor(int position);
-
     }
 
     private static final int TITLE_OFFSET_DIPS = 24;
