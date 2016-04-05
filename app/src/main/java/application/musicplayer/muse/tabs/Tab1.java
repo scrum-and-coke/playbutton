@@ -42,6 +42,7 @@ public class Tab1 extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.tab_1, container, false);
         context = v.getContext();
+        refreshView(v);
 
         ImageButton buttonClose = (ImageButton) v.findViewById(R.id.cancel);
         buttonClose.setOnClickListener(new OnClickListener() {
@@ -97,6 +98,8 @@ public class Tab1 extends Fragment{
                                                 MainActivity.playlists.add(tempPlaylist);
 
                                                 MainActivity.songList = tempPlaylist;
+
+                                                MainActivity.playlists.add(tempPlaylist);
 
                                                 MainActivity.tab1CreatePlaylistMode = false;
 

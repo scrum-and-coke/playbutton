@@ -52,16 +52,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 public class MainActivity extends ActionBarActivity implements MediaPlayerControl {
 
     // Declaring Your View and Variables
-    private SongAdapter songAdapt;
     Toolbar toolbar;
     public static ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    public static ListView listView;
-    //CharSequence Titles[]={"PlayLists","MusE","SongList"};
     CharSequence Titles[] = {"PlayLists", "MusE", "SongList"};
     int Numboftabs = 3;
-    public static ArrayList<Song> songListTemp = new ArrayList<Song>();
     public static ListView songView;
     //service
     //music player
@@ -72,27 +68,21 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
     public static Playlist songList = new Playlist();
     public static Playlist defaultSongList = new Playlist();
 
-
-    public static ArrayList<File> playListFileDir = new ArrayList<File>();
     private MusicService musicSrv;
-    public static ArrayList<File> song = new ArrayList<File>();
     private Intent playIntent;
     //binding
     private boolean musicBound = false;
     //controller
     public static MusicController controller;
     private View cSelected;
-    final Context context = this;
-    private ImageButton button;
+
     private int counterC = 0;
     private String tColor = "original";
     //activity and playback pause flags
     private boolean paused = false, playbackPaused = false;
     private boolean show = false;
 
-    public static ArrayList<File> songListTempHold = new ArrayList<File>();
 
-    public Button imageButton;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -194,15 +184,12 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
         // as you specify a parent activity in AndroidManifest.xml.
         //int id = item.getItemId();
 
-        View v = (View) findViewById(R.id.main_activity_DrawerLayout);
         SlidingTabLayout stl = (SlidingTabLayout) findViewById(R.id.tabs);
         Toolbar tb = (Toolbar) findViewById(R.id.tool_bar);
 
         ImageButton ib = (ImageButton) findViewById(R.id.play_pause);
         ImageButton ib2 = (ImageButton) findViewById(R.id.skipback);
         ImageButton ib3 = (ImageButton) findViewById(R.id.skipforward);
-
-        //MenuItem mctoggler = (MenuItem)findViewById(R.id.mctoggle);
 
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
