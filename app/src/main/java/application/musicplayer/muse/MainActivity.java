@@ -1,74 +1,42 @@
 package application.musicplayer.muse;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.media.Image;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.View;
 import android.support.v4.content.LocalBroadcastManager;
 import android.content.BroadcastReceiver;
 import application.musicplayer.muse.customViews.ScrimInsetsFrameLayout;
-import application.musicplayer.muse.tabs.Tab1;
-import application.musicplayer.muse.tabs.Tab3;
 import application.musicplayer.muse.utils.UtilsDevice;
 import application.musicplayer.muse.utils.UtilsMiscellaneous;
 import application.musicplayer.muse.sliding.SlidingTabLayout;
 import application.musicplayer.muse.tabs.ViewPagerAdapter;
-import application.musicplayer.muse.tabs.Tab2;
 
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.SearchView;
-import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import android.os.IBinder;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
@@ -76,7 +44,6 @@ import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Button;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -139,11 +106,34 @@ public class MainActivity extends ActionBarActivity implements MediaPlayerContro
         init_slider();
         init_navigator();
         getSongList();
+        loadPlaylists();
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void loadPlaylists() {
+        File appDir = new File("/data/data/application.musicplayer.muse/files");
+        FileInputStream fis;
+        ObjectInputStream ois;
+        try {
+            for (File f : appDir.listFiles()) {
+                fis = context.openFileInput(f.getPath());
+                ois = new ObjectInputStream(fis);
+                Playlist pl = (Playlist)ois.readObject();
+                playlists.add(pl);
+                ois.close();
+                fis.close();
+            }
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //method to retrieve song info from device

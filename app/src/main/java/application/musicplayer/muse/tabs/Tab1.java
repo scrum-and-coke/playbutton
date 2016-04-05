@@ -2,8 +2,6 @@ package application.musicplayer.muse.tabs;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.media.Image;
-import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -13,37 +11,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import android.os.IBinder;
-import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.ServiceConnection;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.MediaController.MediaPlayerControl;
-import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.graphics.Color;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 import application.musicplayer.muse.MainActivity;
-import application.musicplayer.muse.OnSwipeTouchListener;
 import application.musicplayer.muse.Playlist;
 import application.musicplayer.muse.PlaylistAdapter;
 import application.musicplayer.muse.R;
@@ -114,7 +99,8 @@ public class Tab1 extends Fragment{
                                 .setPositiveButton("OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                CreatePlaylist(tempPlaylist, v);
+                                                savePlaylist(tempPlaylist);
+                                                MainActivity.playlists.add(tempPlaylist);
 
                                                 MainActivity.songList = tempPlaylist;
 
@@ -206,20 +192,20 @@ public class Tab1 extends Fragment{
         ib3.setVisibility(View.VISIBLE);
     }
 
-    public void CreatePlaylist(Playlist pl, View v) {
-        try {
-            String STORETEXT = pl.name + ".txt";
-            OutputStreamWriter out = new OutputStreamWriter(v.getContext().openFileOutput(STORETEXT, 0));
-            for (String x : pl.songList) {
-                try {
-                    out.write(x);
-                    out.write('\n');
-                } catch (Exception e) {
-                }
-            }
-            out.close();
-        } catch (Exception ex) {
-            System.out.print(ex.getMessage());
+
+    private void savePlaylist(Playlist pl) {
+
+        try
+        {
+            FileOutputStream fos = context.openFileOutput( "/data/data/application.musicplayer.muse/files/" + pl.name + ".txt", Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(pl);
+            os.close();
+            fos.close();
+        }
+        catch(IOException i)
+        {
+            i.printStackTrace();
         }
     }
 }
